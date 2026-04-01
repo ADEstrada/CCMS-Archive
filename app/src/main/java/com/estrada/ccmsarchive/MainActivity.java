@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_bookmark) {
                 selectedFragment = new BookmarkFragment();
                 findViewById(R.id.headerview).setVisibility(View.GONE);
+            } else if (id == R.id.nav_add) {
+                selectedFragment = new PostFragment();
+                findViewById(R.id.headerview).setVisibility(View.GONE);
+                findViewById(R.id.bottomNavigationView).setVisibility(View.GONE);
             }
 
             return loadFragment(selectedFragment);

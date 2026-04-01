@@ -34,5 +34,29 @@
     <string name="header_title_placeholder">Title</string>
     <string name="title_saved_projects">Saved Projects</string>
     <string name="desc_back_button">Go back</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_post">Post</string>
+    
+    <string name="title_label">Project Title</string>
+    <string name="course_label">Course</string>
+    <string name="desc_label">Description</string>
+    <string name="tech_used_label">Technologies Used</string>
+    <string name="add_media_Label">Add Media</string>
+    <string name="additional_deets_label">Additional Details</string>
+    <string name="year_label">Year</string>
+    <string name="contributors_label">Contributors</string>
+    <string name="post_button">Post</string>
+
+    <string name="content_desc_add_media">Adding photos or videos.</string>
+
+    <string name="project_title_hint">Project Title</string>
+    <string name="desc_hint">Description of the project...</string>
+    <string name="course_hint">Start typing course title...</string>
+    <string name="tech_used_hint">Start typing technologies used...</string>
+    <string name="year_hint">The year the project was completed.</string>
+    <string name="contibutors_hint">Name of other contributors.</string>
+
+
 
 </resources>
