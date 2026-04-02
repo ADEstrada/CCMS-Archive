@@ -35,4 +35,11 @@
     <string name="title_saved_projects">Saved Projects</string>
     <string name="desc_back_button">Go back</string>
 
+    <string name="profile_details">Profile</string>
+
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_pass">Confirm Password</string>
+    <string name="update_pass">Update Password</string>
+
 </resources>

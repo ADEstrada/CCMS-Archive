@@ -1,5 +1,6 @@
 package com.estrada.ccmsarchive;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -20,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
 
     private CardView profileCard;
     private BottomNavigationView bottomNav;
+    private TextView profileInitials;
+    private TextView btnEditProfile;
+    private TextView btnChangePassword;
+    private TextView btnAboutCCMS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +32,14 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        TextView profileInitials = findViewById(R.id.profile_initials);
+        profileInitials = findViewById(R.id.profile_initials);
         profileCard = findViewById(R.id.cardProfile);
         bottomNav = findViewById(R.id.bottomNavigationView);
+
+        // SIDE BAR
+        btnEditProfile = findViewById(R.id.menu_edit_profile);
+        btnChangePassword = findViewById(R.id.menu_change_password);
+        btnAboutCCMS = findViewById(R.id.menu_about);
 
         // Retrieve the strings passed from the Intent
         String firstName = getIntent().getStringExtra("FIRST_NAME");
@@ -49,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
         }
 
+        // BOTTOM NAVIGATION FOR FRAGMENTS
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();
@@ -64,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
             return loadFragment(selectedFragment);
         });
 
+
+        // SIDEBAR
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         CardView cardProfile = findViewById(R.id.cardProfile);
 
@@ -72,6 +85,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
+        });
+
+        // EDIT PROFILE IN SIDEBAR
+        btnEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, EditProfile.class);
+            startActivity(intent);
+            drawerLayout.closeDrawers();
+        });
+
+        // CHANGE PASSWORD IN SIDEBAR
+        btnChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ChangePassword.class);
+            startActivity(intent);
+            drawerLayout.closeDrawers();
+        });
+
+        // ABOUT CCMS IN SIDEBAR
+        btnAboutCCMS.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AboutCCMS.class);
+            startActivity(intent);
+            drawerLayout.closeDrawers();
         });
     }
 
