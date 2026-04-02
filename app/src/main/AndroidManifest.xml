@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CCMSArchive">
         <activity
+            android:name=".ProfileDetails"
+            android:exported="false" />
+        <activity
+            android:name=".AboutCCMS"
+            android:exported="false" />
+        <activity
+            android:name=".ChangePassword"
+            android:exported="false" />
+        <activity
+            android:name=".EditProfile"
+            android:exported="false" />
+        <activity
             android:name=".SignUpActivity"
             android:exported="false" />
         <activity

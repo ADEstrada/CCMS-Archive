@@ -59,4 +59,11 @@
 
 
 
+    <string name="profile_details">Profile</string>
+
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_pass">Confirm Password</string>
+    <string name="update_pass">Update Password</string>
+
 </resources>
