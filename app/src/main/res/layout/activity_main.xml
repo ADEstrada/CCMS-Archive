@@ -68,8 +68,8 @@
 
                     <EditText
                         android:id="@+id/search_bar"
-                        android:layout_width="240dp"
-                        android:layout_height="54dp"
+                        android:layout_width="236dp"
+                        android:layout_height="46dp"
                         android:background="@null"
                         android:hint="@string/search_hint"
                         android:paddingStart="12dp"
