@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//import com.estrada.ccmsarchive.databinding.FragmentPostBinding;
 
 public class PostFragment extends Fragment {
     public TextView headerTitle;
