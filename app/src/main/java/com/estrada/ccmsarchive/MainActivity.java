@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private CardView profileCard;
     private BottomNavigationView bottomNav;
     private TextView profileInitials;
+
+    private TextView btnProfileDetails;
     private TextView btnEditProfile;
     private TextView btnChangePassword;
     private TextView btnAboutCCMS;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavigationView);
 
         // SIDE BAR
+        btnProfileDetails = findViewById(R.id.sidebar_initials);
         btnEditProfile = findViewById(R.id.menu_edit_profile);
         btnChangePassword = findViewById(R.id.menu_change_password);
         btnAboutCCMS = findViewById(R.id.menu_about);
@@ -71,9 +74,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new BookmarkFragment();
                 findViewById(R.id.headerview).setVisibility(View.GONE);
             } else if (id == R.id.nav_add) {
-                selectedFragment = new PostFragment();
-                findViewById(R.id.headerview).setVisibility(View.GONE);
-                findViewById(R.id.bottomNavigationView).setVisibility(View.GONE);
+               Intent intent = new Intent(MainActivity.this, PostActivity.class);
+               startActivity(intent);
             }
 
             return loadFragment(selectedFragment);
@@ -89,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
+        });
+
+        //PROFILE DETAILS IN SIDEBAR
+        btnProfileDetails.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileDetails.class);
+            startActivity(intent);
+            drawerLayout.closeDrawers();
         });
 
         // EDIT PROFILE IN SIDEBAR

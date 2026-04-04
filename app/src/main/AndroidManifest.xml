@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CCMSArchive">
         <activity
+            android:name=".ProjectPostsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PostActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_post"
+            android:theme="@style/Theme.CCMSArchive.Fullscreen" />
+        <activity
             android:name=".ProfileDetails"
             android:exported="false" />
         <activity

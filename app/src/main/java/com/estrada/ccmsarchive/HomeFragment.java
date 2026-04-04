@@ -38,7 +38,8 @@ public class HomeFragment extends Fragment {
             list.add(new ProjectPreview("CCMS Website", "The name is CCMS... a web portal for archiving school files.", "Estrada"));
             list.add(new ProjectPreview("Mobile App", "The name is Mobile... a native Android archive app.", "Admin"));
 
-            ProjectAdapter adapter = new ProjectAdapter(list);
+            // added R.layout.item_post
+            adapter = new ProjectAdapter(list,R.layout.item_post);
             rvHome.setAdapter(adapter);
 
             return view;
