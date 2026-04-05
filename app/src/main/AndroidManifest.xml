@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CCMSArchive">
         <activity
+            android:name=".MessageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".item_chat_user"
+            android:exported="false" />
+        <activity
+            android:name=".ChatList"
+            android:exported="false" />
+        <activity
             android:name=".ProjectPostsActivity"
             android:exported="false" />
         <activity

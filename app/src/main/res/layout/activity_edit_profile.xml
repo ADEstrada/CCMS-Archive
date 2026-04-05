@@ -11,9 +11,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="68dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -32,9 +31,10 @@
 
         <EditText
             android:id="@+id/nameField"
-            android:layout_width="315dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_marginTop="6dp"
+            android:layout_marginRight="25dp"
             android:background="#F4F4F4"
             android:fontFamily="@font/poppins_medium"
             android:inputType="text"
@@ -44,14 +44,14 @@
             android:textColor="#BF000000"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/nameLabel"
-            app:layout_constraintTop_toBottomOf="@+id/nameLabel" />
+            app:layout_constraintStart_toStartOf="@id/nameLabel"
+            app:layout_constraintTop_toBottomOf="@+id/nameLabel"
+            app:layout_goneMarginRight="10dp" />
 
         <EditText
             android:id="@+id/studentIdField"
-            android:layout_width="315dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_marginTop="6dp"
             android:background="#F4F4F4"
             android:fontFamily="@font/poppins_medium"
@@ -61,8 +61,7 @@
             android:text="@string/student_id"
             android:textColor="#BF000000"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toEndOf="@+id/nameField"
             app:layout_constraintStart_toStartOf="@+id/studentIdLabel"
             app:layout_constraintTop_toBottomOf="@+id/studentIdLabel" />
 
@@ -80,8 +79,8 @@
 
         <EditText
             android:id="@+id/emailAddField"
-            android:layout_width="315dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
             android:layout_marginTop="6dp"
             android:background="#F4F4F4"
             android:fontFamily="@font/poppins_medium"
@@ -90,8 +89,7 @@
             android:text="@string/email_add_of_student"
             android:textColor="#BF000000"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toEndOf="@+id/studentIdField"
             app:layout_constraintStart_toStartOf="@+id/emailAddLabel"
             app:layout_constraintTop_toBottomOf="@+id/emailAddLabel" />
 
@@ -109,8 +107,9 @@
 
         <Button
             android:id="@+id/saveBtn"
-            android:layout_width="320dp"
+            android:layout_width="0dp"
             android:layout_height="50dp"
+            android:layout_margin="10dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="#87231f"
             android:gravity="center"

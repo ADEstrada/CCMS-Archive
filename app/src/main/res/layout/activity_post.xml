@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +12,284 @@
         android:id="@+id/back_header"
         layout="@layout/layout_back_header" />
 
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_header">>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/titleLabel"
+                android:layout_width="90dp"
+                android:layout_height="21dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/title_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/project_title_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="18dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/project_title_hint"
+                android:inputType="text"
+                android:textColor="#0E0E0E"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/titleLabel"
+                app:layout_constraintTop_toBottomOf="@+id/titleLabel" />
+
+            <TextView
+                android:id="@+id/courseLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/course_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/project_title_field"
+                app:layout_constraintTop_toBottomOf="@+id/project_title_field" />
+
+            <AutoCompleteTextView
+                android:id="@+id/course_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/course_hint"
+                android:inputType="text"
+                android:textColor="#0E0E0E"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/project_title_field"
+                app:layout_constraintStart_toStartOf="@+id/courseLabel"
+                app:layout_constraintTop_toBottomOf="@+id/courseLabel" />
+
+            <TextView
+                android:id="@+id/descLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/desc_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/course_field"
+                app:layout_constraintTop_toBottomOf="@+id/course_field" />
+
+            <EditText
+                android:id="@+id/desc_field"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:gravity="start|top"
+                android:hint="@string/desc_hint"
+                android:inputType="text|textAutoCorrect|textMultiLine"
+                android:nestedScrollingEnabled="false"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/course_field"
+                app:layout_constraintStart_toStartOf="@+id/descLabel"
+                app:layout_constraintTop_toBottomOf="@+id/descLabel" />
+
+            <TextView
+                android:id="@+id/techUsedlLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/tech_used_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/desc_field"
+                app:layout_constraintTop_toBottomOf="@+id/desc_field" />
+
+            <AutoCompleteTextView
+                android:id="@+id/tech_used_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/tech_used_hint"
+                android:inputType="text"
+                android:textColor="#0E0E0E"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/desc_field"
+                app:layout_constraintStart_toStartOf="@+id/techUsedlLabel"
+                app:layout_constraintTop_toBottomOf="@+id/techUsedlLabel" />
+
+            <TextView
+                android:id="@+id/addMediaLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/add_media_Label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tech_used_field"
+                app:layout_constraintTop_toBottomOf="@+id/tech_used_field" />
+
+            <ImageButton
+                android:id="@+id/btnAddMedia"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/content_desc_add_media"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/gallery"
+                app:layout_constraintStart_toStartOf="@+id/addMediaLabel"
+                app:layout_constraintTop_toBottomOf="@+id/addMediaLabel" />
+
+            <TextView
+                android:id="@+id/addDetailsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/additional_deets_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/btnAddMedia"
+                app:layout_constraintTop_toBottomOf="@+id/btnAddMedia" />
+
+            <TextView
+                android:id="@+id/yearLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/year_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/addDetailsLabel"
+                app:layout_constraintTop_toBottomOf="@+id/addDetailsLabel" />
+
+            <EditText
+                android:id="@+id/year_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/year_hint"
+                android:inputType="number"
+                android:textColor="#0E0E0E"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tech_used_field"
+                app:layout_constraintStart_toStartOf="@+id/yearLabel"
+                app:layout_constraintTop_toBottomOf="@+id/yearLabel" />
+
+            <TextView
+                android:id="@+id/contibutorsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/contributors_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/year_field"
+                app:layout_constraintTop_toBottomOf="@+id/year_field" />
+
+            <TextView
+                android:id="@+id/prof_instructor_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/prof_instructor_label"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/contributors_field"
+                app:layout_constraintTop_toBottomOf="@+id/contributors_field" />
+
+            <AutoCompleteTextView
+                android:id="@+id/prof_instructor_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/prof_instructor_hint"
+                android:inputType="text"
+                android:textColor="#0E0E0E"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/year_field"
+                app:layout_constraintStart_toStartOf="@+id/prof_instructor_label"
+                app:layout_constraintTop_toBottomOf="@+id/prof_instructor_label" />
+
+            <EditText
+                android:id="@+id/contributors_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="@string/contributors_hint"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/year_field"
+                app:layout_constraintStart_toStartOf="@+id/contibutorsLabel"
+                app:layout_constraintTop_toBottomOf="@+id/contibutorsLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView2"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnPost"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginStart="265dp"
+                android:layout_marginEnd="240dp"
+                android:backgroundTint="#87231f"
+                android:fontFamily="@font/poppins_medium"
+                android:gravity="center"
+                android:text="@string/post_button"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.538"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

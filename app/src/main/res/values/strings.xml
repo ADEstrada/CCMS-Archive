@@ -37,7 +37,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_post">Post</string>
-    
+
     <string name="title_label">Project Title</string>
     <string name="course_label">Course</string>
     <string name="desc_label">Description</string>
@@ -46,6 +46,7 @@
     <string name="additional_deets_label">Additional Details</string>
     <string name="year_label">Year</string>
     <string name="contributors_label">Contributors</string>
+    <string name="prof_instructor_label">Professor/Instructor</string>
 
     <string name="post_button">Post</string>
 
@@ -56,9 +57,8 @@
     <string name="course_hint">Start typing course title...</string>
     <string name="tech_used_hint">Start typing technologies used...</string>
     <string name="year_hint">The year the project was completed.</string>
-    <string name="contibutors_hint">Name of other contributors.</string>
-
-
+    <string name="contributors_hint">Name of other contributors.</string>
+    <string name="prof_instructor_hint">Name of Professor or Instructor.</string>
 
     <string name="profile_details">Profile</string>
 
@@ -90,5 +90,41 @@
     <string name="status">Pending</string>
 
     <string name="contact_text">Contact Me</string>
+
+    <string name="mission">Mission</string>
+    <string name="mission_desc">To provide a centralized digital repository for the College of Computing and Multimedia Studies (CCMS), specifically for IT and IS programs. CCMS Archive aims to eliminate the frustration of academic redundancy by offering a structured platform for browsing past research, project demonstrations, and technical documentation. By making previous student outputs easily accessible, the mission is to foster a culture of innovation, streamline the topic proposal process, and promote meaningful academic collaboration between current students and past project creators.</string>
+
+    <string name="developer">Developer</string>
+    <string name="developer_desc">
+        <![CDATA[
+        This application is a collaborative effort by 2nd-year CCMS students. The original project concept and research idea were proposed by Jasmine C. Raviz. The full development, encompassing both Frontend development and Backend development, was co-executed as a partnership between Ann Dominique C. Estrada and Jasmine C. Raviz. Together, they aim to bridge the gap between past academic achievements and future student innovations.<br><br>
+
+        <b>Jasmine C. Raviz</b><br>
+        <a href="https://www.linkedin.com/in/jasmine-raviz-b64a203ab?utm_source=share_via&utm_content=profile&utm_medium=member_android">LinkedIn</a> | <a href="https://github.com/jasmineraviz">GitHub</a> | <a href="https://jasmine-portfolio-dun.vercel.app/">Portfolio</a><br>
+
+        <b>Ann Dominique C. Estrada</b><br>
+        <a href="https://www.linkedin.com/in/ann-dominique-estrada/">LinkedIn</a> | <a href="https://github.com/ADEstrada">GitHub</a> | <a href="https://portfolio-ad-estrada.vercel.app/">Portfolio</a><br>
+
+        ]]>
+    </string>
+
+    <string name="acknowledgement">Acknowledgement</string>
+    <string name="acknowledgement_desc">The developers would like to express their deepest gratitude to Ma\'am Norianne Lamadrid, their dedicated instructor, for her invaluable guidance, patience, and professional expertise throughout this course. Her insights and mentorship played a crucial role in the conceptualization and realization of the CCMS Archive. \n\nThe developers also extend their thanks to the CCMS Faculty for providing an environment that encourages innovation and shared learning. This project would not have been possible without their continuous support.</string>
+
+    <string name="app_ver">App Version</string>
+    <string name="app_ver_desc">1</string>
+
+    <string name="messageTitle">Message</string>
+    <string name="chat_name">Jasmine Raviz</string>
+    <string name="chat_latest">Hello, chat latest</string>
+    <string name="date">April 5</string>
+
+    <string name="chat_initial">JR</string>
+    <string name="hint_message">Type a message...</string>
+    <string name="time">3:59 pm</string>
+    <string name="message_sent">This is the message sent</string>
+    <string name="sent">Sent</string>
+
+
 
 </resources>

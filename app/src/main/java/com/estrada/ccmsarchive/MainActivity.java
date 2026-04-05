@@ -33,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         profileInitials = findViewById(R.id.profile_initials);
         profileCard = findViewById(R.id.cardProfile);
@@ -81,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
             return loadFragment(selectedFragment);
         });
 
+        // MESSAGE BUTTON
+        findViewById(R.id.btn_message).setOnClickListener(v -> {
+            startActivity(new android.content.Intent(MainActivity.this, ChatList.class));
+        });
 
         // SIDEBAR
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
