@@ -37,7 +37,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_post">Post</string>
-
+    
     <string name="title_label">Project Title</string>
     <string name="course_label">Course</string>
     <string name="desc_label">Description</string>
@@ -46,6 +46,7 @@
     <string name="additional_deets_label">Additional Details</string>
     <string name="year_label">Year</string>
     <string name="contributors_label">Contributors</string>
+
     <string name="post_button">Post</string>
 
     <string name="content_desc_add_media">Adding photos or videos.</string>
@@ -57,11 +58,37 @@
     <string name="year_hint">The year the project was completed.</string>
     <string name="contibutors_hint">Name of other contributors.</string>
 
+
+
     <string name="profile_details">Profile</string>
 
     <string name="current_password">Current Password</string>
     <string name="new_password">New Password</string>
     <string name="confirm_pass">Confirm Password</string>
     <string name="update_pass">Update Password</string>
+    <string name="title_activity_post">PostActivity</string>
+
+    <string name="saved_project_name">Project Name</string>
+    <string name="saved_course">Course</string>
+    <string name="saved_description">Description</string>
+    <string name="saved_uploader">Author</string>
+
+    <string name="name">Name</string>
+    <string name="name_of_student">Name of Student</string>
+    <string name="student_id">Student ID</string>
+    <string name="student_id_of_student">00-0000</string>
+    <string name="email_address">Email Address</string>
+    <string name="email_add_of_student">student@gmail.com</string>
+    <string name="saveEdit">Save</string>
+
+    <string name="studentName">Jasmine Raviz</string>
+    <string name="program_year">BSIT | 2nd Year</string>
+    <string name="projects">Projects</string>
+    <string name="my_posts">My Projects (0)</string>
+
+    <string name="status_label">Status:</string>
+    <string name="status">Pending</string>
+
+    <string name="contact_text">Contact Me</string>
 
 </resources>

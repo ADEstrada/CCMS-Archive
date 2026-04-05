@@ -33,6 +33,5 @@
         android:layout_marginStart="16dp"
         android:text="@string/full_name_format"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="16sp" />
 </LinearLayout>

@@ -5,7 +5,123 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".EditProfile">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="64dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.421"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/nameLabel"
+            android:layout_width="57dp"
+            android:layout_height="27dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/name"
+            android:textColor="#514E4E"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/nameField"
+            android:layout_width="315dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="#F4F4F4"
+            android:fontFamily="@font/poppins_medium"
+            android:inputType="text"
+            android:outlineProvider="none"
+            android:padding="12dp"
+            android:text="Jasmine C. Raviz"
+            android:textColor="#BF000000"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/nameLabel"
+            app:layout_constraintTop_toBottomOf="@+id/nameLabel" />
+
+        <EditText
+            android:id="@+id/studentIdField"
+            android:layout_width="315dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="#F4F4F4"
+            android:fontFamily="@font/poppins_medium"
+            android:inputType="text"
+            android:outlineProvider="none"
+            android:padding="12dp"
+            android:text="@string/student_id"
+            android:textColor="#BF000000"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/studentIdLabel"
+            app:layout_constraintTop_toBottomOf="@+id/studentIdLabel" />
+
+        <TextView
+            android:id="@+id/emailAddLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/email_address"
+            android:textColor="#514E4E"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/studentIdField"
+            app:layout_constraintTop_toBottomOf="@+id/studentIdField" />
+
+        <EditText
+            android:id="@+id/emailAddField"
+            android:layout_width="315dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="#F4F4F4"
+            android:fontFamily="@font/poppins_medium"
+            android:inputType="text"
+            android:padding="12dp"
+            android:text="@string/email_add_of_student"
+            android:textColor="#BF000000"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/emailAddLabel"
+            app:layout_constraintTop_toBottomOf="@+id/emailAddLabel" />
+
+        <TextView
+            android:id="@+id/studentIdLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/student_id"
+            android:textColor="#514E4E"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/nameField"
+            app:layout_constraintTop_toBottomOf="@+id/nameField" />
+
+        <Button
+            android:id="@+id/saveBtn"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#87231f"
+            android:gravity="center"
+            android:text="@string/saveEdit"
+            android:textColor="#FFFEFE"
+            android:textSize="20sp"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         android:id="@+id/layoutHeader"

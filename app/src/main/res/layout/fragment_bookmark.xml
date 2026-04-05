@@ -7,13 +7,13 @@
     android:background="@color/white"
     tools:context=".BookmarkFragment">
 
-    <include layout="@layout/layout_back_header" />
+    <include layout="@layout/layout_back_header_main" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBookmarks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:padding="16dp" />
 
 </LinearLayout>

@@ -1,26 +1,33 @@
 package com.estrada.ccmsarchive;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
     private List<ProjectPreview> projectList;
+    // jasmine 4/3/26
+    private int layout_id;
 
-    public ProjectAdapter(List<ProjectPreview> projectList) {
+    public ProjectAdapter(List<ProjectPreview> projectList, int layout_id) {
         this.projectList = projectList;
+        this.layout_id = layout_id;
     }
 
     @NonNull
     @Override
     public ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(layout_id, parent, false);
         return new ProjectViewHolder(view);
     }
 
@@ -30,7 +37,31 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         holder.tvProjectName.setText(project.getProjectName());
         holder.tvDescription.setText(project.getDescription());
+        holder.tvDescription.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
         holder.tvUploader.setText("Uploaded by: " + project.getUploader());
+
+        if (holder.tvCourse != null) {
+            holder.tvCourse.setText(project.getCourse());
+        }
+
+        //Connect the Post cardview to the post details
+        if (holder.cardView != null) {
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+
+                    Intent intent = new Intent(context, ProjectPostsActivity.class);
+                    context.startActivity(intent);
+                }
+            });
+        }
 
         // Add dynamic images logic here.
     }
@@ -41,15 +72,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
-        TextView tvProjectName, tvDescription, tvUploader;
+        androidx.cardview.widget.CardView cardView;
+        TextView tvProjectName, tvDescription, tvUploader, tvCourse;
         ImageView ivPreview;
 
         public ProjectViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.postCardView);
             tvProjectName = itemView.findViewById(R.id.projectName);
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
+            tvCourse = itemView.findViewById(R.id.courseName);
         }
     }
 }
