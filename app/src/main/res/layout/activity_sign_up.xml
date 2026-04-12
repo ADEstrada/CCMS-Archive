@@ -48,6 +48,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/fn_label"
                         android:textColor="#FFFFFF"
+                        android:fontFamily="@font/poppins_medium"
                         android:textSize="18sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -63,6 +64,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
                         android:textSize="16sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/fnLabel" />
@@ -75,6 +77,7 @@
                         android:text="@string/ln_label"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/first_name_field" />
 
@@ -89,6 +92,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
                         android:textSize="16sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/lnLabel" />
@@ -101,6 +105,7 @@
                         android:text="@string/studentID_label"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/last_name_field" />
 
@@ -115,6 +120,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
                         android:textSize="16sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sIDLabel" />
@@ -127,6 +133,7 @@
                         android:text="@string/email_label"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/studentID_field" />
 
@@ -142,6 +149,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
                         android:textSize="16sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/EmailLabel" />
@@ -154,6 +162,7 @@
                         android:text="@string/password_label"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/email_field" />
 
@@ -169,6 +178,7 @@
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
                         android:textSize="16sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/passwordLabel" />
@@ -183,6 +193,7 @@
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
                         app:cornerRadius="5dp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/password_field" />
@@ -195,6 +206,7 @@
                         android:text="@string/or_Text"
                         android:textColor="#FFFFFF"
                         android:textSize="17sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
@@ -208,6 +220,7 @@
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
                         android:textSize="17sp"
+                        android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/orText" />

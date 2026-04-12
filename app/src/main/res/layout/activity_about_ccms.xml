@@ -57,7 +57,7 @@
                             android:fontFamily="@font/poppins_medium"
                             android:text="@string/mission"
                             android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:id="@+id/ivArrowMission"
@@ -163,7 +163,7 @@
                             android:fontFamily="@font/poppins_medium"
                             android:text="@string/acknowledgement"
                             android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:id="@+id/ivArrowAcknowledgement"
@@ -215,7 +215,7 @@
                             android:fontFamily="@font/poppins_medium"
                             android:text="@string/app_ver"
                             android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:id="@+id/ivArrowAppVer"
@@ -232,6 +232,7 @@
                         android:layout_marginTop="12dp"
                         android:lineSpacingExtra="4sp"
                         android:text="@string/app_ver_desc"
+                        android:fontFamily="@font/poppins_medium"
                         android:textColor="@color/black"
                         android:visibility="gone" />
                 </LinearLayout>

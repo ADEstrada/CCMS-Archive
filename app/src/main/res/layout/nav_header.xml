@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
+        android:fontFamily="@font/poppins_medium"
         android:text="@string/full_name_format"
         android:textColor="@color/black"
         android:textSize="16sp" />

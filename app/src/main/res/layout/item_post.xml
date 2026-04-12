@@ -46,7 +46,8 @@
                 android:text="@string/default_project_name"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins_medium"/>
 
             <TextView
                 android:id="@+id/projectDescription"
@@ -57,7 +58,8 @@
                 android:maxLines="2"
                 android:text="@string/default_project_desc"
                 android:textColor="#E0E0E0"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_medium"/>
 
             <TextView
                 android:id="@+id/uploaderName"
@@ -66,7 +68,8 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/default_project_uploader"
                 android:textColor="#B1FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:fontFamily="@font/poppins_medium"/>
         </LinearLayout>
 
     </LinearLayout>

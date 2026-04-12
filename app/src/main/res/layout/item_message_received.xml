@@ -15,6 +15,7 @@
         android:textColor="@color/black"
         android:textSize="12sp"
         android:textStyle="bold"
+        android:fontFamily="@font/poppins_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +39,8 @@
             android:text="--"
             android:textColor="@color/white"
             android:textSize="10sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins_medium"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -65,7 +67,8 @@
             android:paddingVertical="10dp"
             android:text="@string/chat_latest"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_medium"/>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

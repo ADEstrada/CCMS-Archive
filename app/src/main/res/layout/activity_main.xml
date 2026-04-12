@@ -94,6 +94,7 @@
                         android:layout_width="236dp"
                         android:layout_height="46dp"
                         android:background="@null"
+                        android:fontFamily="@font/poppins_medium"
                         android:hint="@string/search_hint"
                         android:paddingStart="12dp"
                         android:paddingEnd="40dp"
