@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +14,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class LoginActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,12 +28,15 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         EditText emailField = findViewById(R.id.email_field);
         EditText passwordField = findViewById(R.id.password_field);
         Button loginBtn = findViewById(R.id.loginBtn);
         Button dhaBtn = findViewById(R.id.dha_btn);
 
-        // Navigation to SignUpActivity
+        // NAV TO SIGN UP
         if (dhaBtn != null) {
             dhaBtn.setOnClickListener(v -> {
                 Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
@@ -34,13 +44,39 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
 
-        // Login Logic & Navigation to MainActivity (Dashboard)
         if (loginBtn != null) {
             loginBtn.setOnClickListener(v -> {
+                String emailInput = emailField.getText().toString().trim();
+                String passInput = passwordField.getText().toString().trim();
+
                 if (validateLogin(emailField, passwordField)) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    mAuth.signInWithEmailAndPassword(emailInput, passInput)
+                            .addOnCompleteListener(this, task -> {
+                                if (task.isSuccessful()) {
+                                    String userId = mAuth.getCurrentUser().getUid();
+
+                                    db.collection("users").document(userId).get()
+                                            .addOnSuccessListener(documentSnapshot -> {
+                                                if (documentSnapshot.exists()) {
+                                                    String fName = documentSnapshot.getString("firstName");
+                                                    String lName = documentSnapshot.getString("lastName");
+
+                                                    Toast.makeText(LoginActivity.this, "Welcome back, " + fName + "!", Toast.LENGTH_SHORT).show();
+
+                                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                    intent.putExtra("FIRST_NAME", fName);
+                                                    intent.putExtra("LAST_NAME", lName);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(this, "Error fetching profile", Toast.LENGTH_SHORT).show();
+                                            });
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
             });
         }

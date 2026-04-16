@@ -2,22 +2,24 @@ package com.estrada.ccmsarchive;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
 
     private List<ProjectPreview> projectList;
-    // jasmine 4/3/26
     private int layout_id;
+
 
     public ProjectAdapter(List<ProjectPreview> projectList, int layout_id) {
         this.projectList = projectList;
@@ -37,33 +39,45 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         holder.tvProjectName.setText(project.getProjectName());
         holder.tvDescription.setText(project.getDescription());
-        holder.tvDescription.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });
         holder.tvUploader.setText("Uploaded by: " + project.getUploader());
 
-        if (holder.tvCourse != null) {
-            holder.tvCourse.setText(project.getCourse());
+        if (project.getImageData() != null && !project.getImageData().isEmpty()) {
+            try {
+                String base64String = project.getImageData().get(0);
+                byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                holder.ivPreview.setImageBitmap(decodedByte);
+            } catch (Exception e) {
+                holder.ivPreview.setImageResource(R.drawable.gallery);
+            }
+        } else {
+            holder.ivPreview.setImageResource(R.drawable.gallery);
         }
 
-        //Connect the Post cardview to the post details
+        if (holder.tvProgram != null) {
+            holder.tvProgram.setText(project.getProgram());
+        }
+
         if (holder.cardView != null) {
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
-
                     Intent intent = new Intent(context, ProjectPostsActivity.class);
-                    context.startActivity(intent);
+
+                    intent.putExtra("PROJECT_NAME", project.getProjectName());
+                    intent.putExtra("DESCRIPTION", project.getDescription());
+                    intent.putExtra("UPLOADER", project.getUploader());
+                    intent.putExtra("PROGRAM", project.getProgram());
+
+                    if (project.getImageData() != null && !project.getImageData().isEmpty()) {
+                        intent.putExtra("PROJECT_NAME", project.getProjectName());
+                        context.startActivity(intent);
+                    }
                 }
             });
         }
-
-        // Add dynamic images logic here.
     }
 
     @Override
@@ -73,7 +87,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
         androidx.cardview.widget.CardView cardView;
-        TextView tvProjectName, tvDescription, tvUploader, tvCourse;
+        TextView tvProjectName, tvDescription, tvUploader, tvProgram;
         ImageView ivPreview;
 
         public ProjectViewHolder(@NonNull View itemView) {
@@ -83,7 +97,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
-            tvCourse = itemView.findViewById(R.id.courseName);
+            tvProgram = itemView.findViewById(R.id.programTv);
         }
     }
 }

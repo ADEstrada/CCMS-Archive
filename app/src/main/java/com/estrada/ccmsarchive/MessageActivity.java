@@ -53,9 +53,6 @@ public class MessageActivity extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
 
             messageList = new ArrayList<>();
-            // Sample Messages
-            messageList.add(new Message("Hello! How are you?", "3:00 PM", false));
-            messageList.add(new Message("I'm doing great, thanks for asking!", "3:05 PM", true));
 
             adapter = new MessageAdapter(messageList, initials);
             rvMessages.setLayoutManager(new LinearLayoutManager(this));

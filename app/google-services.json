@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "695531294164",
+    "project_id": "ccms-archive",
+    "storage_bucket": "ccms-archive.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695531294164:android:66a2e8db7a57825e47da41",
+        "android_client_info": {
+          "package_name": "com.estrada.ccmsarchive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4HZoAdnPaCEGK-M0cndcwNQghP3v5qzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

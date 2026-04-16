@@ -22,11 +22,13 @@ public class MainActivity extends AppCompatActivity {
     private CardView profileCard;
     private BottomNavigationView bottomNav;
     private TextView profileInitials;
+    private TextView sidebarInitials;
 
     private TextView btnProfileDetails;
     private TextView btnEditProfile;
     private TextView btnChangePassword;
     private TextView btnAboutCCMS;
+    private TextView sidebarFullName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +50,24 @@ public class MainActivity extends AppCompatActivity {
         btnEditProfile = findViewById(R.id.menu_edit_profile);
         btnChangePassword = findViewById(R.id.menu_change_password);
         btnAboutCCMS = findViewById(R.id.menu_about);
+        sidebarFullName = findViewById(R.id.sidebar_user_name);
+        sidebarInitials = findViewById(R.id.sidebar_initials);
 
-        // Retrieve the strings passed from the Intent
         String firstName = getIntent().getStringExtra("FIRST_NAME");
         String lastName = getIntent().getStringExtra("LAST_NAME");
 
-        // Logic to combine and display initials
         if (firstName != null && lastName != null && !firstName.isEmpty() && !lastName.isEmpty()) {
             String initial1 = firstName.substring(0, 1).toUpperCase();
             String initial2 = lastName.substring(0, 1).toUpperCase();
             profileInitials.setText(initial1 + initial2);
+            sidebarInitials.setText(initial1 + initial2);
+
+            if (sidebarFullName != null) {
+                sidebarFullName.setText(firstName + " " + lastName);
+            }
         } else {
-            // Logging in, fetch from database later. Using a default rn.
             profileInitials.setText("AE");
+            if (sidebarFullName != null) sidebarFullName.setText("Guest User");
         }
 
         if (savedInstanceState == null) {
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //PROFILE DETAILS IN SIDEBAR
+        // PROFILE DETAILS IN SIDEBAR
         btnProfileDetails.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ProfileDetails.class);
             startActivity(intent);

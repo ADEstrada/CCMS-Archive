@@ -43,12 +43,7 @@ public class ChatList extends AppCompatActivity {
         rvChatList = findViewById(R.id.rvChatList);
         rvChatList.setLayoutManager(new LinearLayoutManager(this));
 
-        // 3. Create Sample Data
         userList = new ArrayList<>();
-        userList.add(new ChatUser("Jasmine C. Raviz", "I've updated the project documentation...", "Apr 05", "JR"));
-        userList.add(new ChatUser("Ma'am Norianne", "Please check your repository for feedback.", "Apr 04", "NL"));
-        userList.add(new ChatUser("Estrada", "The backend architecture is nearly complete.", "Apr 03", "ES"));
-        userList.add(new ChatUser("CCMS Faculty", "Meeting rescheduled for tomorrow at 2PM.", "Apr 01", "CF"));
 
         chatAdapter = new ChatAdapter(userList, user -> {
             Intent intent = new Intent(ChatList.this, MessageActivity.class);
