@@ -125,6 +125,41 @@
     <string name="message_sent">This is the message sent</string>
     <string name="sent">Sent</string>
 
+    <string-array name="year_array">
+        <item>All Year</item>
+        <item>2015-2016</item>
+        <item>2016-2017</item>
+        <item>2017-2018</item>
+        <item>2018-2019</item>
+        <item>2019-2020</item>
+        <item>2020-2021</item>
+        <item>2021-2022</item>
+        <item>2022-2023</item>
+        <item>2023-2024</item>
+        <item>2024-2025</item>
+        <item>2025-2026</item>
+    </string-array>
+
+    <string-array name="program_array">
+        <item>All Program</item>
+        <item>BSIT</item>
+        <item>BSIS</item>
+    </string-array>
+
+    <string-array name="course_array">
+        <item>All Course</item>
+        <item>IT100 - Introduction to Computing</item>
+        <item>IT101 - Computer Programming 1</item>
+        <item>IT102 - Computer Programming 2</item>
+        <item>IT103 - Data Structures and Algorithms</item>
+        <item>IT105 - Application development and Emerging Technologies</item>
+        <item>IT106 - Information Management</item>
+        <item>IT107 - Introduction to Human-Computer Interaction</item>
+        <item>IT109 - Fundamentals of Database Systems</item>
+        <item>IT110 - Computer Architecture and Robotics</item>
+        <item>IT111 - Integrative Programming Technologies</item>
+        <item>IT112 - Mobile Applications</item>
+    </string-array>
 
 
 </resources>

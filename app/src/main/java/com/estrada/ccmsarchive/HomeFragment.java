@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,8 +26,13 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProjectAdapter adapter;
-    private List<ProjectPreview> projectList;
+    private List<ProjectPreview> list;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private TextView btnYear, btnCourse, btnProgram;
+
+    private String currentYear = "All";
+    private String currentCourse = "All";
+    private String currentProgram = "All";
 
         @Nullable
         @Override
@@ -36,8 +42,8 @@ public class HomeFragment extends Fragment {
             RecyclerView rvHome = view.findViewById(R.id.rvHome);
             rvHome.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            List<ProjectPreview> list = new ArrayList<>();
-            adapter = new ProjectAdapter(list,R.layout.item_post);
+            list = new ArrayList<>();
+            adapter = new ProjectAdapter(list, R.layout.item_post);
             rvHome.setAdapter(adapter);
 
             db.collection("Projects")
@@ -78,9 +84,41 @@ public class HomeFragment extends Fragment {
                         }
                     });
 
+            btnYear = view.findViewById(R.id.btnYearFilter);
+            String[] yearOptions = getResources().getStringArray(R.array.year_array);
+
+            btnYear.setOnClickListener(v -> {
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Year", yearOptions, selection -> {
+                    btnYear.setText(selection + " ▼");
+                    currentYear = selection;
+                });
+                sheet.show(getActivity().getSupportFragmentManager(), "yearFilter");
+            });
+
+            btnCourse = view.findViewById(R.id.btnCourseFilter);
+            String[] courseOptions = getResources().getStringArray(R.array.course_array);
+
+            btnCourse.setOnClickListener(v -> {
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Course", courseOptions, selection -> {
+                    btnCourse.setText(selection + " ▼");
+                    currentCourse = selection;
+                });
+                sheet.show(getActivity().getSupportFragmentManager(), "courseFilter");
+            });
+
+            btnProgram = view.findViewById(R.id.btnProgramFilter);
+            String[] programOptions = getResources().getStringArray(R.array.program_array);
+
+            btnProgram.setOnClickListener(v -> {
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Program", programOptions, selection -> {
+                    btnProgram.setText(selection + " ▼");
+                    currentProgram = selection;
+                });
+                sheet.show(getActivity().getSupportFragmentManager(), "programFilter");
+            });
+
             return view;
         }
-
 
 
         @Override
