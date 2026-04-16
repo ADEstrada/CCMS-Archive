@@ -50,13 +50,29 @@ public class HomeFragment extends Fragment {
                         if (value != null) {
                             list.clear();
                             for (DocumentSnapshot doc : value.getDocuments()) {
+
                                 String title = doc.getString("title");
                                 String desc = doc.getString("description");
                                 String uploader = doc.getString("uploader");
                                 String program = doc.getString("program");
                                 List<String> images = (List<String>) doc.get("imageData");
 
-                                list.add(new ProjectPreview(title, desc, uploader, program, images));
+                                String status = doc.getString("status");
+                                String course = doc.getString("course");
+                                String tech = doc.getString("technologies");
+                                String contributors = doc.getString("contributors");
+
+                                list.add(new ProjectPreview(
+                                        title,
+                                        desc,
+                                        uploader,
+                                        program,
+                                        images,
+                                        status != null ? status : "Approved",
+                                        course != null ? course : "",
+                                        tech != null ? tech : "",
+                                        contributors != null ? contributors : ""
+                                ));
                             }
                             adapter.notifyDataSetChanged();
                         }

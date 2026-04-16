@@ -20,7 +20,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private List<ProjectPreview> projectList;
     private int layout_id;
 
-
     public ProjectAdapter(List<ProjectPreview> projectList, int layout_id) {
         this.projectList = projectList;
         this.layout_id = layout_id;
@@ -43,16 +42,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         if (project.getImageData() != null && !project.getImageData().isEmpty()) {
             try {
-                String base64String = project.getImageData().get(0);
-                byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                holder.ivPreview.setImageBitmap(decodedByte);
+                byte[] decodedString = Base64.decode(project.getImageData().get(0), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                holder.ivPreview.setImageBitmap(bitmap);
             } catch (Exception e) {
                 holder.ivPreview.setImageResource(R.drawable.gallery);
             }
-        } else {
-            holder.ivPreview.setImageResource(R.drawable.gallery);
         }
 
         if (holder.tvProgram != null) {
@@ -60,30 +55,25 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
 
         if (holder.cardView != null) {
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, ProjectPostsActivity.class);
+            holder.cardView.setOnClickListener(v -> {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, ProjectPostsActivity.class);
 
-                    intent.putExtra("PROJECT_NAME", project.getProjectName());
-                    intent.putExtra("DESCRIPTION", project.getDescription());
-                    intent.putExtra("UPLOADER", project.getUploader());
-                    intent.putExtra("PROGRAM", project.getProgram());
+                intent.putExtra("PROJECT_NAME", project.getProjectName());
+                intent.putExtra("DESCRIPTION", project.getDescription());
+                intent.putExtra("UPLOADER", project.getUploader());
+                intent.putExtra("PROGRAM", project.getProgram());
+                intent.putExtra("COURSE", project.getCourse());
+                intent.putExtra("TECHNOLOGIES", project.getTechUsed());
+                intent.putExtra("CONTRIBUTORS", project.getContributors());
 
-                    if (project.getImageData() != null && !project.getImageData().isEmpty()) {
-                        intent.putExtra("PROJECT_NAME", project.getProjectName());
-                        context.startActivity(intent);
-                    }
-                }
+                context.startActivity(intent);
             });
         }
     }
 
     @Override
-    public int getItemCount() {
-        return projectList.size();
-    }
+    public int getItemCount() { return projectList.size(); }
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
         androidx.cardview.widget.CardView cardView;
@@ -97,7 +87,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
-            tvProgram = itemView.findViewById(R.id.programTv);
+            tvProgram = itemView.findViewById(R.id.programAndYearTv);
         }
     }
 }

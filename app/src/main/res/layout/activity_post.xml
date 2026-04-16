@@ -76,6 +76,7 @@
                 android:hint="@string/course_hint"
                 android:inputType="text"
                 android:textColor="#0E0E0E"
+                android:completionThreshold="1"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/project_title_field"
                 app:layout_constraintStart_toStartOf="@+id/courseLabel"
@@ -120,14 +121,14 @@
                 app:layout_constraintStart_toStartOf="@+id/desc_field"
                 app:layout_constraintTop_toBottomOf="@+id/desc_field" />
 
-            <AutoCompleteTextView
+            <MultiAutoCompleteTextView
                 android:id="@+id/tech_used_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="@string/tech_used_hint"
-                android:inputType="text"
+                android:hint="Select tech (e.g. Java, Firebase)"
+                android:inputType="textMultiLine"
                 android:textColor="#0E0E0E"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/desc_field"
@@ -203,6 +204,7 @@
                 android:fontFamily="@font/poppins_medium"
                 android:hint="@string/year_hint"
                 android:inputType="number"
+                android:maxLength="4"
                 android:textColor="#0E0E0E"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/tech_used_field"
@@ -221,7 +223,7 @@
                 app:layout_constraintStart_toStartOf="@+id/year_field"
                 app:layout_constraintTop_toBottomOf="@+id/year_field" />
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/contributors_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

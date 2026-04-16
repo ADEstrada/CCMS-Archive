@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -36,10 +38,20 @@ public class PostActivity extends AppCompatActivity {
     private static final int MAX_IMAGES = 5;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private EditText project_title_field, desc_field, year_field, contributors_field;
-    private AutoCompleteTextView course_field, tech_used_field, prof_instructor_field;
+    private EditText project_title_field, desc_field, year_field;
+    private AutoCompleteTextView course_field, prof_instructor_field;
+    private MultiAutoCompleteTextView tech_used_field, contributors_field;
     private Button btnPost;
+
+    private List<String> courseSuggestions = new ArrayList<>();
+    private ArrayAdapter<String> courseAdapter;
+    private List<String> techSuggestions = new ArrayList<>();
+    private ArrayAdapter<String> techAdapter;
+    private List<String> userSuggestions = new ArrayList<>();
+    private ArrayAdapter<String> userAdapter;
+    private List<String> instructorSuggestions = new ArrayList<>();
+    private ArrayAdapter<String> instructorAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +61,51 @@ public class PostActivity extends AppCompatActivity {
         project_title_field = findViewById(R.id.project_title_field);
         course_field = findViewById(R.id.course_field);
         desc_field = findViewById(R.id.desc_field);
-        tech_used_field = findViewById(R.id.tech_used_field);
         year_field = findViewById(R.id.year_field);
         contributors_field = findViewById(R.id.contributors_field);
         prof_instructor_field = findViewById(R.id.prof_instructor_field);
+        course_field = findViewById(R.id.course_field);
+        tech_used_field = findViewById(R.id.tech_used_field);
+
+        // CONTRIBUTORS
+        userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, userSuggestions);
+        contributors_field.setAdapter(userAdapter);
+        contributors_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        contributors_field.setThreshold(1);
+        fetchRegisteredUsers();
+
+        // COURSE
+        courseAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, courseSuggestions);
+        course_field.setAdapter(courseAdapter);
+        course_field.setThreshold(1);
+        fetchCourseData();
+
+        // TECH USED
+        techAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, techSuggestions);
+        tech_used_field.setAdapter(techAdapter);
+        tech_used_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        tech_used_field.setThreshold(1);
+        fetchTechData();
+
+        // INSTRUCTOR
+        instructorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, instructorSuggestions);
+        prof_instructor_field.setAdapter(instructorAdapter);
+        prof_instructor_field.setThreshold(1);
+        fetchInstructorData();
 
         ImageButton btnAddMedia = findViewById(R.id.btnAddMedia);
         RecyclerView rvImagePreview = findViewById(R.id.rvImagePreview);
         btnPost = findViewById(R.id.btnPost);
 
-        // Adapter Setup
+        // IMAGE
         imageAdapter = new ImagePreviewAdapter(selectedImageUris);
         rvImagePreview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvImagePreview.setAdapter(imageAdapter);
+
+        // PROF
+        prof_instructor_field.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedName = (String) parent.getItemAtPosition(position);
+        });
 
         btnAddMedia.setOnClickListener(v -> {
             if (selectedImageUris.size() >= MAX_IMAGES) {
@@ -86,8 +130,43 @@ public class PostActivity extends AppCompatActivity {
 
     private void validateAndProcess() {
         String title = project_title_field.getText().toString().trim();
-        if (title.isEmpty() || selectedImageUris.isEmpty()) {
-            Toast.makeText(this, "Title and images are required", Toast.LENGTH_SHORT).show();
+        String yearStr = year_field.getText().toString().trim();
+
+        // 1. Basic empty check
+        if (title.isEmpty() || selectedImageUris.isEmpty() || yearStr.isEmpty()) {
+            Toast.makeText(this, "Title, Year, and images are required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int inputYear = Integer.parseInt(yearStr);
+        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+
+        if (inputYear > currentYear) {
+            year_field.setError("Year cannot be in the future");
+            Toast.makeText(this, "Please enter a valid year (up to " + currentYear + ")", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (inputYear < 2015) {
+            year_field.setError("Year is too old");
+            return;
+        }
+
+        long totalSize = 0;
+        for (Uri uri : selectedImageUris) {
+            try {
+                java.io.InputStream inputStream = getContentResolver().openInputStream(uri);
+                if (inputStream != null) {
+                    totalSize += inputStream.available();
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (totalSize > 700000) {
+            Toast.makeText(this, "Files are too large! Please remove some photos or use smaller ones.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -115,30 +194,89 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
+    private void fetchRegisteredUsers() {
+        db.collection("users").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                userSuggestions.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    String fName = doc.getString("firstName");
+                    String lName = doc.getString("lastName");
+
+                    if (fName != null && lName != null) {
+                        userSuggestions.add(fName + " " + lName);
+                    }
+                }
+                userAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void fetchCourseData() {
+        db.collection("Courses").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                courseSuggestions.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    String id = doc.getId();
+                    String name = doc.getString("courseName");
+
+                    if (name != null) {
+                        courseSuggestions.add(id + " - " + name);
+                    }
+                }
+                courseAdapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to load courses", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void fetchTechData() {
+        db.collection("technologies").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                techSuggestions.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    techSuggestions.add(doc.getId());
+                }
+                techAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void fetchInstructorData() {
+        db.collection("Instructors").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                instructorSuggestions.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    String name = doc.getId();
+
+                    instructorSuggestions.add(name);
+                }
+                instructorAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     private void saveToFirestore(List<String> base64Images) {
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Gamitin ang "users" collection imbes na masterlist dahil UID ang gamit doon
         db.collection("users").document(currentUid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Pag-combine sa firstName at lastName
-                        String fName = documentSnapshot.getString("firstName");
-                        String lName = documentSnapshot.getString("lastName");
-                        String fullName = fName + " " + lName;
-
+                        String fullName = documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName");
                         String program = documentSnapshot.getString("program");
 
                         Map<String, Object> project = new HashMap<>();
                         project.put("title", project_title_field.getText().toString().trim());
                         project.put("description", desc_field.getText().toString().trim());
-
                         project.put("uploader", fullName);
+                        project.put("uploaderUid", currentUid);
                         project.put("program", program);
-
                         project.put("year", year_field.getText().toString().trim());
+                        project.put("course", course_field.getText().toString().trim());
+                        project.put("technologies", tech_used_field.getText().toString().trim());
                         project.put("instructor", prof_instructor_field.getText().toString().trim());
-                        project.put("tech_used", tech_used_field.getText().toString().trim());
+                        project.put("status", "Pending");
+                        project.put("contributors", contributors_field.getText().toString().trim());
                         project.put("imageData", base64Images);
                         project.put("timestamp", FieldValue.serverTimestamp());
 
@@ -146,15 +284,23 @@ public class PostActivity extends AppCompatActivity {
                                 .addOnSuccessListener(doc -> {
                                     Toast.makeText(this, "Project Posted!", Toast.LENGTH_SHORT).show();
                                     finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    btnPost.setEnabled(true);
+                                    btnPost.setText("POST");
+
+                                    if (e.getMessage().contains("too large")) {
+                                        Toast.makeText(this, "Failed: Document is too large. Try removing a photo.", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(this, "Post failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
                                 });
-                    } else {
-                        btnPost.setEnabled(true);
-                        Toast.makeText(this, "Error: User data not found in 'users' collection", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
                     btnPost.setEnabled(true);
-                    Toast.makeText(this, "Connection Error", Toast.LENGTH_SHORT).show();
+                    btnPost.setText("POST");
+                    Toast.makeText(this, "Error fetching user data.", Toast.LENGTH_SHORT).show();
                 });
     }
 }

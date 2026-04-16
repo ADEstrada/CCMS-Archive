@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ public class ProfileDetails extends AppCompatActivity {
     private TextView headerTitle;
     private ImageView btnBack;
 
-    // UI ELEMENTS
     private TextView tvFullName, tvProgramYear, tvInitials;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -42,21 +42,19 @@ public class ProfileDetails extends AppCompatActivity {
         btnBack = findViewById(R.id.btn_back);
         rvPosts = findViewById(R.id.rvPosts);
 
-        // --- MAPPING THE VIEWS ---
         tvFullName = findViewById(R.id.studentNameText);
         tvProgramYear = findViewById(R.id.programYearText);
         tvInitials = findViewById(R.id.tvInitial);
 
-        // Load the data
         fetchUserData();
 
         if (rvPosts != null) {
             rvPosts.setLayoutManager(new LinearLayoutManager(this));
             postList = new ArrayList<>();
-            postList.add(new PostPreview("CCMS Website", "Completed"));
-            postList.add(new PostPreview("CCMS Website", "Pending"));
             adapter = new PostAdapter(postList, R.layout.students_projects);
             rvPosts.setAdapter(adapter);
+
+            fetchUserPosts();
         }
 
         if (headerTitle != null) {
@@ -68,11 +66,35 @@ public class ProfileDetails extends AppCompatActivity {
         }
     }
 
+    private void fetchUserPosts() {
+        if (mAuth.getCurrentUser() == null) return;
+
+        String currentUid = mAuth.getCurrentUser().getUid();
+
+        db.collection("Pending_Projects")
+                .whereEqualTo("uploaderUid", currentUid)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    postList.clear();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String title = doc.getString("title");
+                        String status = doc.getString("status");
+
+                        if (title != null) {
+                            postList.add(new PostPreview(title, status != null ? status : "Pending"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load your posts", Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void fetchUserData() {
         if (mAuth.getCurrentUser() != null) {
             String userId = mAuth.getCurrentUser().getUid();
 
-            // STEP 1: Kunin muna ang Student ID mula sa "users" collection
             db.collection("users").document(userId).get()
                     .addOnSuccessListener(userDoc -> {
                         if (userDoc.exists()) {
@@ -80,13 +102,14 @@ public class ProfileDetails extends AppCompatActivity {
                             String lName = userDoc.getString("lastName");
                             String studID = userDoc.getString("studentID");
 
-                            // I-set ang Name at Initials
                             if (tvFullName != null) tvFullName.setText(fName + " " + lName);
-                            if (tvInitials != null && fName != null) {
-                                tvInitials.setText(fName.substring(0, 1).toUpperCase() + lName.substring(0, 1).toUpperCase());
+
+                            // Safer initials logic
+                            if (tvInitials != null && fName != null && lName != null) {
+                                String initials = fName.substring(0, 1).toUpperCase() + lName.substring(0, 1).toUpperCase();
+                                tvInitials.setText(initials);
                             }
 
-                            // STEP 2: Gamitin ang studID para kunin ang Program/Year sa "student_master_list"
                             if (studID != null) {
                                 db.collection("student_masterlist").document(studID).get()
                                         .addOnSuccessListener(masterDoc -> {
