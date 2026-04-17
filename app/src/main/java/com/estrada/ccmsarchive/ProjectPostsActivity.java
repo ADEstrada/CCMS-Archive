@@ -21,7 +21,14 @@ import java.util.ArrayList;
 
 public class ProjectPostsActivity extends AppCompatActivity {
 
+<<<<<<< Updated upstream
     private ViewPager2 viewPager;
+=======
+    public TextView headerTitle;
+    private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear,  tvInitial, tvCourse, tvContributors;
+    private ImageView btnBack, ivArrowContributors;
+    private ViewPager2 viewPager2;
+>>>>>>> Stashed changes
     private TabLayout tabLayout;
     private String projectName;
     private TextView title;
@@ -44,11 +51,46 @@ public class ProjectPostsActivity extends AppCompatActivity {
             return insets;
         });
 
+<<<<<<< Updated upstream
         headerTitle = findViewById(R.id.header_title);
         btnBack = findViewById(R.id.btn_back);
 
         if (headerTitle != null) {
             headerTitle.setText(R.string.title_post);
+=======
+        // Initialize Views
+        techChipGroup = findViewById(R.id.techChipGroup);
+        tvProjectName = findViewById(R.id.projectName);
+        tvDescription = findViewById(R.id.description);
+        tvStudentName = findViewById(R.id.studentNameTv);
+        tvProgram = findViewById(R.id.programTv);
+        tvYear = findViewById(R.id.yearTv);
+        tvInitial = findViewById(R.id.tvInitial);
+        tvCourse = findViewById(R.id.courseTV);
+        viewPager2 = findViewById(R.id.viewPagerImages);
+        tabLayout = findViewById(R.id.tabLayoutIndicator);
+        tvContributors = findViewById(R.id.tvContributors);
+        contributorsCard = findViewById(R.id.contributorsCard);
+        ivArrowContributors = findViewById(R.id.ivArrowContributors);
+
+        View backHeader = findViewById(R.id.back_header);
+        headerTitle = backHeader.findViewById(R.id.header_title);
+        btnBack = backHeader.findViewById(R.id.btn_back);
+
+        String name = getIntent().getStringExtra("PROJECT_NAME");
+        String desc = getIntent().getStringExtra("DESCRIPTION");
+        String uploader = getIntent().getStringExtra("UPLOADER");
+        String program = getIntent().getStringExtra("PROGRAM");
+        String year = getIntent().getStringExtra("YEAR");
+        String course = getIntent().getStringExtra("COURSE");
+        String contributors = getIntent().getStringExtra("CONTRIBUTORS");
+        String technologies = getIntent().getStringExtra("TECHNOLOGIES");
+
+        if (course != null && !course.isEmpty()) {
+            tvCourse.setText(course);
+        } else {
+            tvCourse.setText("No Course Data"); // Kapag lumabas ito, ibig sabihin null ang COURSE key
+>>>>>>> Stashed changes
         }
 
         if (btnBack != null) {
@@ -56,5 +98,100 @@ public class ProjectPostsActivity extends AppCompatActivity {
                 finish();
             });
         }
+<<<<<<< Updated upstream
+=======
+
+        if (uploader != null && !uploader.isEmpty()) {
+            tvInitial.setText(String.valueOf(uploader.charAt(0)).toUpperCase());
+        }
+
+        if (year != null) {
+            tvYear.setText(" | " + year);
+        } else {
+            tvYear.setText("N/A");
+        }
+
+        // Handling Technologies (Chips)
+        if (technologies != null && !technologies.isEmpty()) {
+            techChipGroup.removeAllViews();
+            String[] techs = technologies.split(",");
+            for (String t : techs) {
+                String cleanTech = t.trim();
+                if (!cleanTech.isEmpty()) {
+                    Chip chip = new Chip(this);
+                    chip.setText(cleanTech);
+                    chip.setChipStrokeWidth(2f);
+                    chip.setChipStrokeColorResource(android.R.color.darker_gray);
+                    chip.setChipBackgroundColorResource(android.R.color.transparent);
+                    techChipGroup.addView(chip);
+                }
+            }
+        }
+
+
+        if (name != null) {
+            FirebaseFirestore.getInstance().collection("Projects")
+                    .whereEqualTo("title", name)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                            List<String> images = (List<String>) doc.get("imageData");
+
+                            if (images != null && !images.isEmpty()) {
+                                ImageSliderAdapter adapter = new ImageSliderAdapter(images);
+                                viewPager2.setAdapter(adapter);
+                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {}).attach();
+                            }
+                        }
+                    });
+        }
+
+        if (headerTitle != null) headerTitle.setText(R.string.title_post);
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+
+        setupExpandableCard(contributorsCard, tvContributors, ivArrowContributors);
+    }
+
+    class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.ViewHolder> {
+        private List<String> images;
+        public ImageSliderAdapter(List<String> images) { this.images = images; }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ImageView imageView = new ImageView(parent.getContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            return new ViewHolder(imageView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            try {
+                byte[] decodedString = Base64.decode(images.get(position), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                ((ImageView) holder.itemView).setImageBitmap(bitmap);
+            } catch (Exception e) {
+                ((ImageView) holder.itemView).setImageResource(R.drawable.gallery);
+            }
+        }
+        @Override
+        public int getItemCount() { return images != null ? images.size() : 0; }
+        class ViewHolder extends RecyclerView.ViewHolder { public ViewHolder(@NonNull View itemView) { super(itemView); } }
+    }
+
+    private void setupExpandableCard(CardView card, final View content, final ImageView arrow) {
+        card.setOnClickListener(v -> {
+            TransitionManager.beginDelayedTransition((ViewGroup) card.getParent(), new AutoTransition());
+            if (content.getVisibility() == View.GONE) {
+                content.setVisibility(View.VISIBLE);
+                arrow.animate().rotation(180).setDuration(250).start();
+            } else {
+                content.setVisibility(View.GONE);
+                arrow.animate().rotation(0).setDuration(250).start();
+            }
+        });
+>>>>>>> Stashed changes
     }
 }

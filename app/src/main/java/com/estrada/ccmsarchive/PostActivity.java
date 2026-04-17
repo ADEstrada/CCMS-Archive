@@ -38,11 +38,13 @@ public class PostActivity extends AppCompatActivity {
     private static final int MAX_IMAGES = 5;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private EditText project_title_field, desc_field, year_field;
-    private AutoCompleteTextView course_field, prof_instructor_field;
+    private EditText project_title_field, desc_field;
+    private AutoCompleteTextView course_field, prof_instructor_field, year_field;
     private MultiAutoCompleteTextView tech_used_field, contributors_field;
     private Button btnPost;
 
+    private List<String> yearSuggestion = new ArrayList<>();
+    private ArrayAdapter<String> yearAdapter;
     private List<String> courseSuggestions = new ArrayList<>();
     private ArrayAdapter<String> courseAdapter;
     private List<String> techSuggestions = new ArrayList<>();
@@ -66,6 +68,12 @@ public class PostActivity extends AppCompatActivity {
         prof_instructor_field = findViewById(R.id.prof_instructor_field);
         course_field = findViewById(R.id.course_field);
         tech_used_field = findViewById(R.id.tech_used_field);
+
+        // YEAR
+        yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, yearSuggestion);
+        year_field.setAdapter(yearAdapter);
+        year_field.setThreshold(1);
+        fetchYearData();
 
         // CONTRIBUTORS
         userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, userSuggestions);
@@ -227,6 +235,18 @@ public class PostActivity extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to load courses", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void fetchYearData() {
+        db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                yearSuggestion.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    yearSuggestion.add(doc.getId());
+                }
+                yearAdapter.notifyDataSetChanged();
+            }
         });
     }
 

@@ -63,6 +63,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 intent.putExtra("DESCRIPTION", project.getDescription());
                 intent.putExtra("UPLOADER", project.getUploader());
                 intent.putExtra("PROGRAM", project.getProgram());
+                intent.putExtra("YEAR", project.getYear());
                 intent.putExtra("COURSE", project.getCourse());
                 intent.putExtra("TECHNOLOGIES", project.getTechUsed());
                 intent.putExtra("CONTRIBUTORS", project.getContributors());
@@ -87,7 +88,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
-            tvProgram = itemView.findViewById(R.id.programAndYearTv);
+            tvProgram = itemView.findViewById(R.id.programTv);
         }
     }
 }

@@ -56,9 +56,9 @@
     <string name="desc_hint">Description of the project...</string>
     <string name="course_hint">Start typing course title...</string>
     <string name="tech_used_hint">Start typing technologies used...</string>
-    <string name="year_hint">The year the project was completed.</string>
-    <string name="contributors_hint">Name of other contributors.</string>
-    <string name="prof_instructor_hint">Name of Professor or Instructor.</string>
+    <string name="year_hint">Enter the academic year the project was completed...</string>
+    <string name="contributors_hint">Enter the name/s of other contributors...</string>
+    <string name="prof_instructor_hint">Enter the name of your Professor or Instructor...</string>
 
     <string name="profile_details">Profile</string>
 

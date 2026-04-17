@@ -8,6 +8,7 @@ public class ProjectPreview {
     private String description;
     private String uploader;
     private String program;
+    private String year;
     private List<String> imageData;
 
     // NEW FIELDS
@@ -17,13 +18,14 @@ public class ProjectPreview {
     private String contributors;
 
     // Updated Constructor
-    public ProjectPreview(String title, String description, String uploader, String program,
+    public ProjectPreview(String title, String description, String uploader, String program, String year,
                           List<String> imageData, String status, String course,
                           String techUsed, String contributors) {
         this.projectName = title;
         this.description = description;
         this.uploader = uploader;
         this.program = program;
+        this.year = year;
         this.imageData = imageData;
         this.status = status;
         this.course = course;
@@ -35,6 +37,7 @@ public class ProjectPreview {
     public String getDescription() { return description; }
     public String getUploader() { return uploader; }
     public String getProgram() { return program; }
+    public  String getYear() { return  year; }
     public List<String> getImageData() { return imageData; }
 
 
