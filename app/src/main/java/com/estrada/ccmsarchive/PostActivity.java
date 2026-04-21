@@ -146,19 +146,21 @@ public class PostActivity extends AppCompatActivity {
             return;
         }
 
-        int inputYear = Integer.parseInt(yearStr);
-        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        //comment ko muna itong inputyear and current year, may itatry lang ako
+        // int inputYear = Integer.parseInt(yearStr);
+        // int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
 
-        if (inputYear > currentYear) {
-            year_field.setError("Year cannot be in the future");
-            Toast.makeText(this, "Please enter a valid year (up to " + currentYear + ")", Toast.LENGTH_SHORT).show();
+        if (!yearStr.matches("\\d{4}-\\d{4}")) {
+            year_field.setError("Year format should be: 0000-0000");
+            Toast.makeText(this, "Please enter a valid academic year (ex. 2025-2026)", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (inputYear < 2015) {
+        /* if (inputYear < 2015) {
             year_field.setError("Year is too old");
             return;
-        }
+        } */
+        
 
         long totalSize = 0;
         for (Uri uri : selectedImageUris) {
