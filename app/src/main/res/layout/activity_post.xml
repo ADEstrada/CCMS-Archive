@@ -191,12 +191,15 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/poppins_medium"
                 android:text="@string/year_label"
-                android:textColor="#000000"
+                android:inputType="number"
+                android:maxLength="9"
+                android:digits="0123456789-"
+                android:textColor="#0E0E0E"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/addDetailsLabel"
                 app:layout_constraintTop_toBottomOf="@+id/addDetailsLabel" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/year_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

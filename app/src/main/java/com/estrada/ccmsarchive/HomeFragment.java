@@ -61,6 +61,8 @@ public class HomeFragment extends Fragment {
                                 String desc = doc.getString("description");
                                 String uploader = doc.getString("uploader");
                                 String program = doc.getString("program");
+                                String year = doc.getString("year");
+
                                 List<String> images = (List<String>) doc.get("imageData");
 
                                 String status = doc.getString("status");
@@ -73,6 +75,7 @@ public class HomeFragment extends Fragment {
                                         desc,
                                         uploader,
                                         program,
+                                        year,
                                         images,
                                         status != null ? status : "Approved",
                                         course != null ? course : "",

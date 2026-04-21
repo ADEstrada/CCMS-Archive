@@ -1,43 +1,44 @@
 package com.estrada.ccmsarchive;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
+import android.util.Base64;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ProjectPostsActivity extends AppCompatActivity {
 
-<<<<<<< Updated upstream
-    private ViewPager2 viewPager;
-=======
     public TextView headerTitle;
-    private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear,  tvInitial, tvCourse, tvContributors;
+    private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear ,tvInitial, tvCourse, tvContributors;
     private ImageView btnBack, ivArrowContributors;
     private ViewPager2 viewPager2;
->>>>>>> Stashed changes
     private TabLayout tabLayout;
-    private String projectName;
-    private TextView title;
-    private ArrayList<String> images;
-    private ArrayList<String> techs_used;
-    public ImageView btnBack;
-    public TextView headerTitle;
-
-
+    private CardView contributorsCard;
+    private ChipGroup techChipGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +52,6 @@ public class ProjectPostsActivity extends AppCompatActivity {
             return insets;
         });
 
-<<<<<<< Updated upstream
-        headerTitle = findViewById(R.id.header_title);
-        btnBack = findViewById(R.id.btn_back);
-
-        if (headerTitle != null) {
-            headerTitle.setText(R.string.title_post);
-=======
         // Initialize Views
         techChipGroup = findViewById(R.id.techChipGroup);
         tvProjectName = findViewById(R.id.projectName);
@@ -90,16 +84,20 @@ public class ProjectPostsActivity extends AppCompatActivity {
             tvCourse.setText(course);
         } else {
             tvCourse.setText("No Course Data"); // Kapag lumabas ito, ibig sabihin null ang COURSE key
->>>>>>> Stashed changes
         }
 
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> {
-                finish();
-            });
+        tvProjectName.setText(name != null ? name : "No Title");
+        tvDescription.setText(desc != null ? desc : "No Description");
+        tvStudentName.setText(uploader != null ? uploader : "Unknown Student");
+        tvProgram.setText(program != null ? program : "N/A");
+        tvYear.setText(year != null ? year : "N/A");
+        tvCourse.setText(course != null ? course : "No Course Assigned");
+
+        if (contributors != null && !contributors.isEmpty()) {
+            tvContributors.setText(contributors);
+        } else {
+            tvContributors.setText("No other contributors listed.");
         }
-<<<<<<< Updated upstream
-=======
 
         if (uploader != null && !uploader.isEmpty()) {
             tvInitial.setText(String.valueOf(uploader.charAt(0)).toUpperCase());
@@ -111,9 +109,10 @@ public class ProjectPostsActivity extends AppCompatActivity {
             tvYear.setText("N/A");
         }
 
+
         // Handling Technologies (Chips)
         if (technologies != null && !technologies.isEmpty()) {
-            techChipGroup.removeAllViews();
+            techChipGroup.removeAllViews(); // Clear the group before adding new chips
             String[] techs = technologies.split(",");
             for (String t : techs) {
                 String cleanTech = t.trim();
@@ -192,6 +191,5 @@ public class ProjectPostsActivity extends AppCompatActivity {
                 arrow.animate().rotation(0).setDuration(250).start();
             }
         });
->>>>>>> Stashed changes
     }
 }

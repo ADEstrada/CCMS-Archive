@@ -160,7 +160,7 @@ public class PostActivity extends AppCompatActivity {
             year_field.setError("Year is too old");
             return;
         } */
-        
+
 
         long totalSize = 0;
         for (Uri uri : selectedImageUris) {
