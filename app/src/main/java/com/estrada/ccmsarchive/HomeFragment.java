@@ -27,6 +27,12 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProjectAdapter adapter;
     private List<ProjectPreview> list;
+    private List<ProjectPreview> filteredList;
+    private List<ProjectPreview> fullList;
+    private List<String> masterYearList = new ArrayList<>();
+    private List<String> masterCourseList = new ArrayList<>();
+    private List<String> masterProgramList = new ArrayList<>();
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView btnYear, btnCourse, btnProgram;
 
@@ -42,6 +48,15 @@ public class HomeFragment extends Fragment {
             RecyclerView rvHome = view.findViewById(R.id.rvHome);
             rvHome.setLayoutManager(new LinearLayoutManager(getContext()));
 
+            //fullList and filtered list
+            fullList = new ArrayList<>();
+            filteredList = new ArrayList<>();
+
+            masterYearList.add("All");
+            masterCourseList.add("All");
+            masterProgramList.add("All");
+            fetchFilterOptions();
+
             list = new ArrayList<>();
             adapter = new ProjectAdapter(list, R.layout.item_post);
             rvHome.setAdapter(adapter);
@@ -54,7 +69,7 @@ public class HomeFragment extends Fragment {
                         }
 
                         if (value != null) {
-                            list.clear();
+                            fullList.clear();
                             for (DocumentSnapshot doc : value.getDocuments()) {
 
                                 String title = doc.getString("title");
@@ -70,7 +85,7 @@ public class HomeFragment extends Fragment {
                                 String tech = doc.getString("technologies");
                                 String contributors = doc.getString("contributors");
 
-                                list.add(new ProjectPreview(
+                                fullList.add(new ProjectPreview(
                                         title,
                                         desc,
                                         uploader,
@@ -83,39 +98,43 @@ public class HomeFragment extends Fragment {
                                         contributors != null ? contributors : ""
                                 ));
                             }
+                            applyFilters();
+
+
                             adapter.notifyDataSetChanged();
                         }
                     });
 
             btnYear = view.findViewById(R.id.btnYearFilter);
-            String[] yearOptions = getResources().getStringArray(R.array.year_array);
-
             btnYear.setOnClickListener(v -> {
+                String[] yearOptions = masterYearList.toArray(new String[0]);
                 FilterBottomSheet sheet = new FilterBottomSheet("Select Year", yearOptions, selection -> {
                     btnYear.setText(selection + " ▼");
                     currentYear = selection;
+                    applyFilters();
                 });
                 sheet.show(getActivity().getSupportFragmentManager(), "yearFilter");
             });
 
             btnCourse = view.findViewById(R.id.btnCourseFilter);
-            String[] courseOptions = getResources().getStringArray(R.array.course_array);
-
             btnCourse.setOnClickListener(v -> {
+                String[] courseOptions = masterCourseList.toArray(new String[0]);
                 FilterBottomSheet sheet = new FilterBottomSheet("Select Course", courseOptions, selection -> {
                     btnCourse.setText(selection + " ▼");
                     currentCourse = selection;
+                    applyFilters();
                 });
                 sheet.show(getActivity().getSupportFragmentManager(), "courseFilter");
             });
 
             btnProgram = view.findViewById(R.id.btnProgramFilter);
-            String[] programOptions = getResources().getStringArray(R.array.program_array);
 
             btnProgram.setOnClickListener(v -> {
+                String[] programOptions = masterProgramList.toArray(new String[0]);
                 FilterBottomSheet sheet = new FilterBottomSheet("Select Program", programOptions, selection -> {
                     btnProgram.setText(selection + " ▼");
                     currentProgram = selection;
+                    applyFilters();
                 });
                 sheet.show(getActivity().getSupportFragmentManager(), "programFilter");
             });
@@ -130,5 +149,47 @@ public class HomeFragment extends Fragment {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).setUIVisibility(true);
             }
+        }
+
+        private void applyFilters() {
+            filteredList.clear();
+
+            for (ProjectPreview project : fullList) {
+                boolean matchesYear = currentYear.equals("All") || project.getYear().equals(currentYear);
+                boolean matchesCourse = currentCourse.equals("All") || project.getCourse().equals(currentCourse);
+                boolean matchesProgram = currentProgram.equals("All") || project.getProgram().equals(currentProgram);
+
+                if (matchesYear && matchesCourse && matchesProgram) {
+                    filteredList.add(project);
+                }
+            }
+            adapter.updateList(filteredList);
+        }
+
+        //method for filter ng year, course, and program
+        private void fetchFilterOptions() {
+            db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                masterYearList.clear();
+                masterYearList.add("All");
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    masterYearList.add(doc.getId());
+                }
+            });
+
+            db.collection("Programs").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                masterProgramList.clear();
+                masterProgramList.add("All");
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    masterProgramList.add(doc.getId());
+                }
+            });
+
+            db.collection("Courses").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                masterCourseList.clear();
+                masterCourseList.add("All");
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    masterCourseList.add(doc.getId());
+                }
+            });
         }
     }

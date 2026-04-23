@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
@@ -74,7 +75,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public int getItemCount() { return projectList.size(); }
+    public int getItemCount() {
+        return projectList == null ? 0 : projectList.size();
+    }
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
         androidx.cardview.widget.CardView cardView;
@@ -90,5 +93,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             ivPreview = itemView.findViewById(R.id.projectPreview);
             tvProgram = itemView.findViewById(R.id.programTv);
         }
+    }
+
+    public void updateList(List<ProjectPreview> newList) {
+        this.projectList = new ArrayList<>(newList);
+        notifyDataSetChanged();
     }
 }

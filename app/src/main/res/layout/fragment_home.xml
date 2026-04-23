@@ -48,6 +48,7 @@
                 android:paddingHorizontal="13dp"
                 android:text="All"
                 android:textColor="@color/black"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -62,6 +63,7 @@
                 android:paddingHorizontal="13dp"
                 android:text="Year ▼"
                 android:textColor="@color/black"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -76,6 +78,7 @@
                 android:paddingHorizontal="13dp"
                 android:text="Course ▼"
                 android:textColor="@color/black"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -90,6 +93,7 @@
                 android:paddingHorizontal="13dp"
                 android:text="Program ▼"
                 android:textColor="@color/black"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
