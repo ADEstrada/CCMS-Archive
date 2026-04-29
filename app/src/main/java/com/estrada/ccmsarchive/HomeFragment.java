@@ -151,20 +151,25 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        private void applyFilters() {
-            filteredList.clear();
+    private void applyFilters() {
+        filteredList.clear();
 
-            for (ProjectPreview project : fullList) {
-                boolean matchesYear = currentYear.equals("All") || project.getYear().equals(currentYear);
-                boolean matchesCourse = currentCourse.equals("All") || project.getCourse().equals(currentCourse);
-                boolean matchesProgram = currentProgram.equals("All") || project.getProgram().equals(currentProgram);
+        for (ProjectPreview project : fullList) {
+            boolean matchesYear = currentYear.equals("All") || project.getYear().equals(currentYear);
 
-                if (matchesYear && matchesCourse && matchesProgram) {
-                    filteredList.add(project);
-                }
+            String courseValue = project.getCourse().trim();
+            String courseId = courseValue.contains("-")
+                    ? courseValue.split("-")[0].trim()
+                    : courseValue;
+            boolean matchesCourse = currentCourse.equals("All") || courseId.equals(currentCourse);
+            boolean matchesProgram = currentProgram.equals("All") || project.getProgram().equals(currentProgram);
+
+            if (matchesYear && matchesCourse && matchesProgram) {
+                filteredList.add(project);
             }
-            adapter.updateList(filteredList);
         }
+        adapter.updateList(filteredList);
+    }
 
         //method for filter ng year, course, and program
         private void fetchFilterOptions() {

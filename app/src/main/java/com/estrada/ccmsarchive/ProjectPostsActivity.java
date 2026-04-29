@@ -140,7 +140,9 @@ public class ProjectPostsActivity extends AppCompatActivity {
                             if (images != null && !images.isEmpty()) {
                                 ImageSliderAdapter adapter = new ImageSliderAdapter(images);
                                 viewPager2.setAdapter(adapter);
-                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {}).attach();
+                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
+                                    tab.setText("");
+                                }).attach();
                             }
                         }
                     });
