@@ -60,7 +60,8 @@ public class ProjectPostsActivity extends AppCompatActivity {
         tvProjectName = findViewById(R.id.projectName);
         tvDescription = findViewById(R.id.description);
         tvStudentName = findViewById(R.id.studentNameTv);
-        tvProgram = findViewById(R.id.programAndYearTv);
+        tvProgram = findViewById(R.id.programTv);
+        tvYear = findViewById(R.id.yearTv);
         tvInitial = findViewById(R.id.tvInitial);
         tvCourse = findViewById(R.id.courseTV);
         viewPager2 = findViewById(R.id.viewPagerImages);
@@ -195,7 +196,9 @@ public class ProjectPostsActivity extends AppCompatActivity {
                             if (images != null && !images.isEmpty()) {
                                 ImageSliderAdapter adapter = new ImageSliderAdapter(images);
                                 viewPager2.setAdapter(adapter);
-                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {}).attach();
+                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
+                                    tab.setText("");
+                                }).attach();
                             }
                         }
                     });

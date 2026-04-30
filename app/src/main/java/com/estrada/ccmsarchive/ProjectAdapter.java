@@ -68,6 +68,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 intent.putExtra("DESCRIPTION", project.getDescription());
                 intent.putExtra("UPLOADER", project.getUploader());
                 intent.putExtra("PROGRAM", project.getProgram());
+                intent.putExtra("YEAR", project.getYear());
                 intent.putExtra("COURSE", project.getCourse());
                 intent.putExtra("TECHNOLOGIES", project.getTechUsed());
                 intent.putExtra("CONTRIBUTORS", project.getContributors());
@@ -78,7 +79,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     @Override
-    public int getItemCount() { return projectList.size(); }
+    public int getItemCount() {
+        return projectList == null ? 0 : projectList.size();
+    }
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
         androidx.cardview.widget.CardView cardView;
@@ -92,7 +95,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
-            tvProgram = itemView.findViewById(R.id.programAndYearTv);
+            tvProgram = itemView.findViewById(R.id.programTv);
         }
     }
 
