@@ -1,5 +1,6 @@
 package com.estrada.ccmsarchive;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -13,8 +14,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -25,11 +39,18 @@ public class MessageActivity extends AppCompatActivity {
     private ImageView btnSend, btnBack;
     private TextView tvName, tvInitials;
 
+    private FirebaseFirestore db;
+    private String currentUserId;
+    private String receiverId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_message);
+
+        db = FirebaseFirestore.getInstance();
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -37,36 +58,93 @@ public class MessageActivity extends AppCompatActivity {
             return insets;
         });
 
-            rvMessages = findViewById(R.id.rvChatMessages);
-            etInput = findViewById(R.id.etMessage);
-            btnSend = findViewById(R.id.btnSend);
-            btnBack = findViewById(R.id.btn_back_message);
-            tvName = findViewById(R.id.tvChatName);
-            tvInitials = findViewById(R.id.tvChatInitial);
+        rvMessages = findViewById(R.id.rvChatMessages);
+        etInput = findViewById(R.id.etMessage);
+        btnSend = findViewById(R.id.btnSend);
+        btnBack = findViewById(R.id.btn_back_message);
+        tvName = findViewById(R.id.tvChatName);
+        tvInitials = findViewById(R.id.tvChatInitial);
 
-            String name = getIntent().getStringExtra("USER_NAME");
-            String initials = getIntent().getStringExtra("USER_INITIALS");
+        String name = getIntent().getStringExtra("USER_NAME");
+        String initials = getIntent().getStringExtra("USER_INITIALS");
+        receiverId = getIntent().getStringExtra("RECEIVER_ID");
 
-            tvName.setText(name != null ? name : "User");
-            tvInitials.setText(initials != null ? initials : "--");
+        tvName.setText(name != null ? name : "User");
+        tvInitials.setText(initials != null ? initials : "--");
 
-            btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(MessageActivity.this, ChatList.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
-            messageList = new ArrayList<>();
+        messageList = new ArrayList<>();
+        adapter = new MessageAdapter(messageList, initials);
+        rvMessages.setLayoutManager(new LinearLayoutManager(this));
+        rvMessages.setAdapter(adapter);
 
-            adapter = new MessageAdapter(messageList, initials);
-            rvMessages.setLayoutManager(new LinearLayoutManager(this));
-            rvMessages.setAdapter(adapter);
+        listenForMessages();
 
+        btnSend.setOnClickListener(v -> {
+            String text = etInput.getText().toString().trim();
+            if (!text.isEmpty() && receiverId != null) {
+                saveMessageToFirestore(text);
+                etInput.setText("");
+            }
+        });
 
-            btnSend.setOnClickListener(v -> {
-                String text = etInput.getText().toString().trim();
-                if (!text.isEmpty()) {
-                    messageList.add(new Message(text, "4:00 PM", true));
-                    adapter.notifyItemInserted(messageList.size() - 1);
-                    rvMessages.scrollToPosition(messageList.size() - 1);
-                    etInput.setText("");
-                }
-            });
+    }
+
+    private void saveMessageToFirestore(String text) {
+        String chatId = getChatId(currentUserId, receiverId);
+
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("senderId", currentUserId);
+        messageData.put("text", text);
+        messageData.put("timestamp", FieldValue.serverTimestamp());
+
+        db.collection("Chats").document(chatId)
+                .collection("messages").add(messageData);
+
+        Map<String, Object> chatData = new HashMap<>();
+        chatData.put("lastMessage", text);
+        chatData.put("timestamp", FieldValue.serverTimestamp());
+        chatData.put("participants", Arrays.asList(currentUserId, receiverId));
+
+        db.collection("Chats").document(chatId).set(chatData, SetOptions.merge());
+    }
+
+    private String getChatId(String id1, String id2) {
+        if (id1.compareTo(id2) < 0) return id1 + "_" + id2;
+        else return id2 + "_" + id1;
+    }
+
+    private void listenForMessages() {
+        String chatId = getChatId(currentUserId, receiverId);
+        db.collection("Chats").document(chatId)
+                .collection("messages")
+                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) return;
+                    if (value != null) {
+                        messageList.clear();
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            String text = doc.getString("text");
+                            String senderId = doc.getString("senderId");
+
+                            Timestamp timestamp = doc.getTimestamp("timestamp");
+                            String timeString = "Sending...";
+                            if (timestamp != null) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                                timeString = sdf.format(timestamp.toDate());
+                            }
+
+                            messageList.add(new Message(text, timeString, senderId.equals(currentUserId)));
+                        }
+                        adapter.notifyDataSetChanged();
+                        rvMessages.scrollToPosition(messageList.size() - 1);
+                    }
+                });
     }
 }

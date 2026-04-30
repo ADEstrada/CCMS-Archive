@@ -40,14 +40,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         holder.tvDescription.setText(project.getDescription());
         holder.tvUploader.setText("Uploaded by: " + project.getUploader());
 
-        if (project.getImageData() != null && !project.getImageData().isEmpty()) {
-            try {
-                byte[] decodedString = Base64.decode(project.getImageData().get(0), Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                holder.ivPreview.setImageBitmap(bitmap);
-            } catch (Exception e) {
-                holder.ivPreview.setImageResource(R.drawable.gallery);
-            }
+        List<String> images = project.getImageData();
+        if (images != null && !images.isEmpty()) {
+            String firstImageUrl = images.get(0);
+
+            com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                    .load(firstImageUrl)
+                    .placeholder(R.drawable.gallery)
+                    .error(R.drawable.gallery)
+                    .centerCrop()
+                    .into(holder.ivPreview);
+        } else {
+            holder.ivPreview.setImageResource(R.drawable.gallery);
         }
 
         if (holder.tvProgram != null) {

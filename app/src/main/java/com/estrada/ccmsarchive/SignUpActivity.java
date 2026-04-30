@@ -50,7 +50,6 @@ public class SignUpActivity extends AppCompatActivity {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult().exists()) {
 
-                                // Get official records from the database
                                 String officialFirstName = task.getResult().getString("firstName");
                                 String officialLastName = task.getResult().getString("lastName");
                                 String program = task.getResult().getString("program");

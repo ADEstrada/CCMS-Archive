@@ -1,15 +1,15 @@
 package com.estrada.ccmsarchive;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
+import com.bumptech.glide.Glide;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -33,12 +33,15 @@ import java.util.List;
 public class ProjectPostsActivity extends AppCompatActivity {
 
     public TextView headerTitle;
-    private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvInitial, tvCourse, tvContributors;
+    private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear ,tvInitial, tvCourse, tvContributors;
     private ImageView btnBack, ivArrowContributors;
     private ViewPager2 viewPager2;
     private TabLayout tabLayout;
     private CardView contributorsCard;
     private ChipGroup techChipGroup;
+
+    private Button btnContact;
+    private String realUploaderUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,39 +73,100 @@ public class ProjectPostsActivity extends AppCompatActivity {
         headerTitle = backHeader.findViewById(R.id.header_title);
         btnBack = backHeader.findViewById(R.id.btn_back);
 
+        btnContact = findViewById(R.id.btn_contact);
+
         String name = getIntent().getStringExtra("PROJECT_NAME");
         String desc = getIntent().getStringExtra("DESCRIPTION");
         String uploader = getIntent().getStringExtra("UPLOADER");
         String program = getIntent().getStringExtra("PROGRAM");
+        String year = getIntent().getStringExtra("YEAR");
         String course = getIntent().getStringExtra("COURSE");
         String contributors = getIntent().getStringExtra("CONTRIBUTORS");
         String technologies = getIntent().getStringExtra("TECHNOLOGIES");
 
+        if (name != null) {
+            FirebaseFirestore.getInstance().collection("Projects")
+                    .whereEqualTo("title", name)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+
+                            realUploaderUid = doc.getString("uploaderUid");
+
+                            List<String> images = (List<String>) doc.get("imageData");
+                            if (images != null && !images.isEmpty()) {
+                                ImageSliderAdapter adapter = new ImageSliderAdapter(images);
+                                viewPager2.setAdapter(adapter);
+                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {}).attach();
+                            }
+                        }
+                    });
+        }
+
+        btnContact.setOnClickListener(v -> {
+            if (realUploaderUid != null) {
+                Intent intent = new Intent(ProjectPostsActivity.this, MessageActivity.class);
+                intent.putExtra("USER_NAME", uploader);
+                intent.putExtra("USER_INITIALS", tvInitial.getText().toString());
+                intent.putExtra("RECEIVER_ID", realUploaderUid);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Fetching uploader info... please wait.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         if (course != null && !course.isEmpty()) {
             tvCourse.setText(course);
         } else {
-            tvCourse.setText("No Course Data"); // Kapag lumabas ito, ibig sabihin null ang COURSE key
+            tvCourse.setText("No Course Data");
         }
 
         tvProjectName.setText(name != null ? name : "No Title");
         tvDescription.setText(desc != null ? desc : "No Description");
         tvStudentName.setText(uploader != null ? uploader : "Unknown Student");
         tvProgram.setText(program != null ? program : "N/A");
+        tvYear.setText(year != null ? year : "N/A");
         tvCourse.setText(course != null ? course : "No Course Assigned");
 
         if (contributors != null && !contributors.isEmpty()) {
-            tvContributors.setText(contributors);
+            String cleanContributors = contributors.trim().replaceAll(",\\s*$", "");
+            String[] parts = cleanContributors.split(",");
+            StringBuilder formattedList = new StringBuilder();
+            for (int i = 0; i < parts.length; i++) {
+                String contributorName = parts[i].trim();
+                if (!contributorName.isEmpty()) {
+                    formattedList.append(contributorName);
+                    if (i < parts.length - 1) {
+                        formattedList.append(", ");
+                    }
+                }
+            }
+            tvContributors.setText(formattedList.toString());
         } else {
             tvContributors.setText("No other contributors listed.");
         }
 
         if (uploader != null && !uploader.isEmpty()) {
-            tvInitial.setText(String.valueOf(uploader.charAt(0)).toUpperCase());
+            String[] nameParts = uploader.trim().split("\\s+");
+            String initials = "";
+            if (nameParts.length > 0) {
+                initials += nameParts[0].charAt(0);
+                if (nameParts.length > 1) {
+                    initials += nameParts[nameParts.length - 1].charAt(0);
+                }
+            }
+            tvInitial.setText(initials.toUpperCase());
         }
 
-        // Handling Technologies (Chips)
+        if (year != null) {
+            tvYear.setText(" | " + year);
+        } else {
+            tvYear.setText("N/A");
+        }
+
         if (technologies != null && !technologies.isEmpty()) {
-            techChipGroup.removeAllViews(); // Clear the group before adding new chips
+            techChipGroup.removeAllViews();
             String[] techs = technologies.split(",");
             for (String t : techs) {
                 String cleanTech = t.trim();
@@ -117,7 +181,6 @@ public class ProjectPostsActivity extends AppCompatActivity {
             }
         }
 
-
         if (name != null) {
             FirebaseFirestore.getInstance().collection("Projects")
                     .whereEqualTo("title", name)
@@ -125,8 +188,10 @@ public class ProjectPostsActivity extends AppCompatActivity {
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-                            List<String> images = (List<String>) doc.get("imageData");
 
+                            realUploaderUid = doc.getString("uploaderUid");
+
+                            List<String> images = (List<String>) doc.get("imageData");
                             if (images != null && !images.isEmpty()) {
                                 ImageSliderAdapter adapter = new ImageSliderAdapter(images);
                                 viewPager2.setAdapter(adapter);
@@ -157,13 +222,14 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            try {
-                byte[] decodedString = Base64.decode(images.get(position), Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                ((ImageView) holder.itemView).setImageBitmap(bitmap);
-            } catch (Exception e) {
-                ((ImageView) holder.itemView).setImageResource(R.drawable.gallery);
-            }
+            String imageUrl = images.get(position);
+
+            Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.gallery)
+                    .error(R.drawable.gallery)
+                    .centerCrop()
+                    .into((ImageView) holder.itemView);
         }
         @Override
         public int getItemCount() { return images != null ? images.size() : 0; }
