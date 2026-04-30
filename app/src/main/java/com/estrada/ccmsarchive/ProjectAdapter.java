@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder> {
@@ -93,5 +94,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             ivPreview = itemView.findViewById(R.id.projectPreview);
             tvProgram = itemView.findViewById(R.id.programAndYearTv);
         }
+    }
+
+    public void updateList(List<ProjectPreview> newList) {
+        this.projectList = new ArrayList<>(newList);
+        notifyDataSetChanged();
     }
 }
