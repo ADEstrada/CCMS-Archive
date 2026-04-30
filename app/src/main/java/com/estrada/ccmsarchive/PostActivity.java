@@ -21,9 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cloudinary.android.MediaManager;
-import com.cloudinary.android.callback.ErrorInfo;
-import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 
 public class PostActivity extends AppCompatActivity {
 
@@ -42,13 +42,11 @@ public class PostActivity extends AppCompatActivity {
     private static final int MAX_IMAGES = 5;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private EditText project_title_field, desc_field;
-    private AutoCompleteTextView course_field, prof_instructor_field, year_field;
+    private EditText project_title_field, desc_field, year_field;
+    private AutoCompleteTextView course_field, prof_instructor_field;
     private MultiAutoCompleteTextView tech_used_field, contributors_field;
     private Button btnPost;
 
-    private List<String> yearSuggestion = new ArrayList<>();
-    private ArrayAdapter<String> yearAdapter;
     private List<String> courseSuggestions = new ArrayList<>();
     private ArrayAdapter<String> courseAdapter;
     private List<String> techSuggestions = new ArrayList<>();
@@ -73,16 +71,40 @@ public class PostActivity extends AppCompatActivity {
         course_field = findViewById(R.id.course_field);
         tech_used_field = findViewById(R.id.tech_used_field);
 
-        // YEAR
-        yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, yearSuggestion);
-        year_field.setAdapter(yearAdapter);
-        year_field.setThreshold(1);
-        fetchYearData();
-
         // CONTRIBUTORS
         userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, userSuggestions);
         contributors_field.setAdapter(userAdapter);
-        contributors_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        contributors_field.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() {
+            @Override
+            public int findTokenStart(CharSequence text, int cursor) {
+                int i = cursor;
+                while (i > 0 && text.charAt(i - 1) != ',') { i--; }
+                while (i < cursor && text.charAt(i) == ' ') { i++; }
+                return i;
+            }
+            @Override
+            public int findTokenEnd(CharSequence text, int cursor) {
+                int i = cursor;
+                int len = text.length();
+                while (i < len) {
+                    if (text.charAt(i) == ',') return i;
+                    else i++;
+                }
+                return len;
+            }
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                int i = text.length();
+                while (i > 0 && text.charAt(i - 1) == ' ') { i--; }
+
+                if (i > 0 && text.charAt(i - 1) == ',') {
+                    return text;
+                } else {
+                    return text;
+                }
+            }
+        });
+
         contributors_field.setThreshold(1);
         fetchRegisteredUsers();
 
@@ -95,7 +117,36 @@ public class PostActivity extends AppCompatActivity {
         // TECH USED
         techAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, techSuggestions);
         tech_used_field.setAdapter(techAdapter);
-        tech_used_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        tech_used_field.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() {
+            @Override
+            public int findTokenStart(CharSequence text, int cursor) {
+                int i = cursor;
+                while (i > 0 && text.charAt(i - 1) != ',') { i--; }
+                while (i < cursor && text.charAt(i) == ' ') { i++; }
+                return i;
+            }
+            @Override
+            public int findTokenEnd(CharSequence text, int cursor) {
+                int i = cursor;
+                int len = text.length();
+                while (i < len) {
+                    if (text.charAt(i) == ',') return i;
+                    else i++;
+                }
+                return len;
+            }
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                int i = text.length();
+                while (i > 0 && text.charAt(i - 1) == ' ') { i--; }
+
+                if (i > 0 && text.charAt(i - 1) == ',') {
+                    return text;
+                } else {
+                    return text;
+                }
+            }
+        });
         tech_used_field.setThreshold(1);
         fetchTechData();
 
@@ -149,21 +200,19 @@ public class PostActivity extends AppCompatActivity {
             return;
         }
 
-        //comment ko muna itong inputyear and current year, may itatry lang ako
-        // int inputYear = Integer.parseInt(yearStr);
-        // int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        int inputYear = Integer.parseInt(yearStr);
+        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
 
-        if (!yearStr.matches("\\d{4}-\\d{4}")) {
-            year_field.setError("Year format should be: 0000-0000");
-            Toast.makeText(this, "Please enter a valid academic year (ex. 2025-2026)", Toast.LENGTH_SHORT).show();
+        if (inputYear > currentYear) {
+            year_field.setError("Year cannot be in the future");
+            Toast.makeText(this, "Please enter a valid year (up to " + currentYear + ")", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        /* if (inputYear < 2015) {
+        if (inputYear < 2015) {
             year_field.setError("Year is too old");
             return;
-        } */
-
+        }
 
         btnPost.setEnabled(false);
         Toast.makeText(this, "Saving project... Please wait.", Toast.LENGTH_SHORT).show();
@@ -198,6 +247,8 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void fetchRegisteredUsers() {
         db.collection("users").get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
@@ -231,18 +282,6 @@ public class PostActivity extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to load courses", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    private void fetchYearData() {
-        db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if (!queryDocumentSnapshots.isEmpty()) {
-                yearSuggestion.clear();
-                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
-                    yearSuggestion.add(doc.getId());
-                }
-                yearAdapter.notifyDataSetChanged();
-            }
         });
     }
 

@@ -80,52 +80,40 @@ public class ProfileDetails extends AppCompatActivity {
             fetchUserPosts("Pending");
             updateTabUI("Pending");
         });
-
-        adapter.setOnDeleteClickListener((project, position) -> {
-            new android.app.AlertDialog.Builder(this)
-                    .setTitle("Delete Project")
-                    .setMessage("Are you sure you want to delete this project?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        String collection = project.getStatus().equals("Approved") ? "Projects" : "Pending_Projects";
-                        db.collection(collection).document(project.getProjectId())
-                                .delete()
-                                .addOnSuccessListener(aVoid -> {
-                                    postList.remove(position);
-                                    adapter.notifyItemRemoved(position);
-                                    Toast.makeText(this, "Project delete.", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> Toast.makeText(this, "Error deleting project!" + e.getMessage(), Toast.LENGTH_SHORT).show());
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-        });
     }
 
     private void fetchUserPosts(String status) {
         if (mAuth.getCurrentUser() == null) return;
         String currentUid = mAuth.getCurrentUser().getUid();
 
-        String collectionName = status.equals("Pending") ? "Pending_Projects" : "Projects";
+        String collectionName;
+        if (status.equals("Pending")) {
+            collectionName = "Pending_Projects";
+        } else {
+            collectionName = "Projects";
+        }
 
-        db.collection(collectionName)
-                .whereEqualTo("uploaderUid", currentUid)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    postList.clear();
-                    int count = queryDocumentSnapshots.size();
+        com.google.firebase.firestore.Query query = db.collection(collectionName)
+                .whereEqualTo("uploaderUid", currentUid);
 
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String title = doc.getString("title");
-                        String actualStatus = (status.equals("Pending")) ? "Pending" : "Approved";
-                        String id = doc.getId();
+        if (status.equals("Approved")) {
+            query = query.whereEqualTo("status", "Approved");
+        }
 
-                        if (title != null) {
-                            postList.add(new PostPreview(id, title, actualStatus));
-                        }
-                    }
-                    adapter.notifyDataSetChanged();
-                    updateProjectCountLabel(status, count);
-                });
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            postList.clear();
+            int count = queryDocumentSnapshots.size();
+
+            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                String title = doc.getString("title");
+                String actualStatus = doc.getString("status");
+                if (title != null) {
+                    postList.add(new PostPreview(title, actualStatus != null ? actualStatus : status));
+                }
+            }
+            adapter.notifyDataSetChanged();
+            updateProjectCountLabel(status, count);
+        });
     }
 
     private void updateProjectCountLabel(String status, int count) {
