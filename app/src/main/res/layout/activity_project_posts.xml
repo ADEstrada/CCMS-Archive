@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/back_header"
-        layout="@layout/layout_back_header" />
+        layout="@layout/layout_back_header_post" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"

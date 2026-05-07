@@ -40,26 +40,26 @@ public class HomeFragment extends Fragment {
     private String currentCourse = "All";
     private String currentProgram = "All";
 
-        @Nullable
-        @Override
+    @Nullable
+    @Override
 
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_home, container, false);
-            RecyclerView rvHome = view.findViewById(R.id.rvHome);
-            rvHome.setLayoutManager(new LinearLayoutManager(getContext()));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        RecyclerView rvHome = view.findViewById(R.id.rvHome);
+        rvHome.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            //fullList and filtered list
-            fullList = new ArrayList<>();
-            filteredList = new ArrayList<>();
+        //fullList and filtered list
+        fullList = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
-            masterYearList.add("All");
-            masterCourseList.add("All");
-            masterProgramList.add("All");
-            fetchFilterOptions();
+        masterYearList.add("All");
+        masterCourseList.add("All");
+        masterProgramList.add("All");
+        fetchFilterOptions();
 
-            list = new ArrayList<>();
-            adapter = new ProjectAdapter(list, R.layout.item_post);
-            rvHome.setAdapter(adapter);
+        list = new ArrayList<>();
+        adapter = new ProjectAdapter(list, R.layout.item_post);
+        rvHome.setAdapter(adapter);
 
             db.collection("Projects")
                     .whereEqualTo("status", "Approved")
@@ -197,4 +197,38 @@ public class HomeFragment extends Fragment {
                 }
             });
         }
+
+    //search
+    private String currentSearchQuery = "";
+
+    private void applySearch() {
+        filteredList.clear();
+        for (ProjectPreview project : fullList) {
+            boolean matchesYear = currentYear.equals("All") || project.getYear().equals(currentYear);
+
+            String courseValue = project.getCourse().trim();
+            String courseId = courseValue.contains("-")
+                    ? courseValue.split("-")[0].trim()
+                    : courseValue;
+            boolean matchesCourse = currentCourse.equals("All") || courseId.equals(currentCourse);
+            boolean matchesProgram = currentProgram.equals("All") || project.getProgram().equals(currentProgram);
+
+            boolean matchesSearch = currentSearchQuery.isEmpty() ||
+                    project.getProjectName().toLowerCase().contains(currentSearchQuery.toLowerCase()) ||
+                    project.getDescription().toLowerCase().contains(currentSearchQuery.toLowerCase());
+
+            if (matchesYear && matchesCourse && matchesProgram && matchesSearch) {
+                filteredList.add(project);
+            }
+        }
+        adapter.updateList(filteredList);
     }
+
+    public void performSearch(String searchQuery) {
+        this.currentSearchQuery = searchQuery;
+        applySearch();
+    }
+
+}
+
+
