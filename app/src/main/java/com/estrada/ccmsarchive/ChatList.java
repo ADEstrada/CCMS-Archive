@@ -24,6 +24,7 @@ public class ChatList extends AppCompatActivity {
     private RecyclerView rvChatList;
     private ChatAdapter chatAdapter;
     private List<ChatUser> userList;
+    private TextView headerTitle;
     private FirebaseFirestore db;
 
     @Override
@@ -31,7 +32,11 @@ public class ChatList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
+        headerTitle = findViewById(R.id.header_title);
 
+        if (headerTitle != null) {
+            headerTitle.setText(R.string.messageTitle);
+        }
 
         db = FirebaseFirestore.getInstance();
         String myId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -69,7 +74,6 @@ public class ChatList extends AppCompatActivity {
                                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd", Locale.getDefault());
                                 formattedTime = sdf.format(time.toDate());
                             }
-
                             final String finalTime = formattedTime;
 
                             db.collection("users").document(otherId).get().addOnSuccessListener(userDoc -> {

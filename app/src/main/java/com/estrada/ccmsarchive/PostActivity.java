@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -57,6 +58,7 @@ public class PostActivity extends AppCompatActivity {
     private ArrayAdapter<String> userAdapter;
     private List<String> instructorSuggestions = new ArrayList<>();
     private ArrayAdapter<String> instructorAdapter;
+    private TextView headerTitle;
 
 
     @Override
@@ -64,6 +66,11 @@ public class PostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
+        headerTitle = findViewById(R.id.header_title);
+
+        if (headerTitle != null) {
+            headerTitle.setText(R.string.title_post);
+        }
         project_title_field = findViewById(R.id.project_title_field);
         course_field = findViewById(R.id.course_field);
         desc_field = findViewById(R.id.desc_field);
@@ -355,6 +362,7 @@ public class PostActivity extends AppCompatActivity {
             templateParams.put("approve_link", approveLink);
             templateParams.put("reject_link", rejectLink);
             templateParams.put("to_email", profEmail);
+            templateParams.put("from_name", "CCMS Archive");
             templateParams.put("date", new java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault()).format(new java.util.Date()));
 
             jsonBody.put("template_params", templateParams);

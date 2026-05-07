@@ -1,6 +1,9 @@
 package com.estrada.ccmsarchive;
 import android.content.Intent;
 import com.bumptech.glide.Glide;
+
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -175,8 +178,8 @@ public class ProjectPostsActivity extends AppCompatActivity {
                     Chip chip = new Chip(this);
                     chip.setText(cleanTech);
                     chip.setChipStrokeWidth(2f);
-                    chip.setChipStrokeColorResource(android.R.color.darker_gray);
-                    chip.setChipBackgroundColorResource(android.R.color.transparent);
+                    chip.setChipStrokeColor(ColorStateList.valueOf(Color.parseColor("#5E0006")));
+                    chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#33FF0000")));
                     techChipGroup.addView(chip);
                 }
             }

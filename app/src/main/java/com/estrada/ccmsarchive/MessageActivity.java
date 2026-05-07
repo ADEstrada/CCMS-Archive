@@ -133,6 +133,13 @@ public class MessageActivity extends AppCompatActivity {
                             String text = doc.getString("text");
                             String senderId = doc.getString("senderId");
 
+                            android.util.Log.d("CHAT_DEBUG", "Sender: " + senderId + " | Me: " + currentUserId);
+
+                            boolean isMe = false;
+                            if (senderId != null && currentUserId != null) {
+                                isMe = senderId.trim().equals(currentUserId.trim()); // Gumamit ng trim() para sigurado
+                            }
+
                             Timestamp timestamp = doc.getTimestamp("timestamp");
                             String timeString = "Sending...";
                             if (timestamp != null) {
@@ -140,7 +147,7 @@ public class MessageActivity extends AppCompatActivity {
                                 timeString = sdf.format(timestamp.toDate());
                             }
 
-                            messageList.add(new Message(text, timeString, senderId.equals(currentUserId)));
+                            messageList.add(new Message(text, timeString, isMe));
                         }
                         adapter.notifyDataSetChanged();
                         rvMessages.scrollToPosition(messageList.size() - 1);
