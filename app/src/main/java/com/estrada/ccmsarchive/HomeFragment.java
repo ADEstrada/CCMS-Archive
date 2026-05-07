@@ -197,4 +197,35 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    //search
+    private String currentSearchQuery = "";
+
+    private void applySearch() {
+        filteredList.clear();
+        for (ProjectPreview project : fullList) {
+            boolean matchesYear = currentYear.equals("All") || project.getYear().equals(currentYear);
+
+            String courseValue = project.getCourse().trim();
+            String courseId = courseValue.contains("-")
+                    ? courseValue.split("-")[0].trim()
+                    : courseValue;
+            boolean matchesCourse = currentCourse.equals("All") || courseId.equals(currentCourse);
+            boolean matchesProgram = currentProgram.equals("All") || project.getProgram().equals(currentProgram);
+
+            boolean matchesSearch = currentSearchQuery.isEmpty() ||
+                    project.getProjectName().toLowerCase().contains(currentSearchQuery.toLowerCase()) ||
+                    project.getDescription().toLowerCase().contains(currentSearchQuery.toLowerCase());
+
+            if (matchesYear && matchesCourse && matchesProgram && matchesSearch) {
+                filteredList.add(project);
+            }
+        }
+        adapter.updateList(filteredList);
+    }
+
+    public void performSearch(String searchQuery) {
+        this.currentSearchQuery = searchQuery;
+        applySearch();
+    }
 }

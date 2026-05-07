@@ -41,12 +41,13 @@
             android:layout_height="129dp">
 
             <ScrollView
+                android:id="@+id/descScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:nestedScrollingEnabled="true"
                 android:fadeScrollbars="false"
-                android:scrollbarStyle="insideOverlay"
-                android:fillViewport="true">
+                android:fillViewport="true"
+                android:nestedScrollingEnabled="true"
+                android:scrollbarStyle="insideOverlay">
 
                 <TextView
                     android:id="@+id/projectDescription"

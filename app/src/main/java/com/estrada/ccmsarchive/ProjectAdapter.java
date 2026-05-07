@@ -37,43 +37,41 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     public void onBindViewHolder(@NonNull ProjectViewHolder holder, int position) {
         ProjectPreview project = projectList.get(position);
 
-        holder.tvProjectName.setText(project.getProjectName());
-        holder.tvDescription.setText(project.getDescription());
-        holder.tvUploader.setText("Uploaded by: " + project.getUploader());
+        if (holder.tvProjectName != null) holder.tvProjectName.setText(project.getProjectName());
+        if (holder.tvDescription != null) holder.tvDescription.setText(project.getDescription());
+        if (holder.tvUploader != null) holder.tvUploader.setText("Author: " + project.getUploader());
+        if (holder.tvCourse != null) holder.tvCourse.setText("Course: " + project.getCourse()); // NEW
 
-        List<String> images = project.getImageData();
-        if (images != null && !images.isEmpty()) {
-            String firstImageUrl = images.get(0);
+        if (holder.tvProgram != null) holder.tvProgram.setText(project.getProgram());
 
-            com.bumptech.glide.Glide.with(holder.itemView.getContext())
-                    .load(firstImageUrl)
-                    .placeholder(R.drawable.gallery)
-                    .error(R.drawable.gallery)
-                    .centerCrop()
-                    .into(holder.ivPreview);
-        } else {
-            holder.ivPreview.setImageResource(R.drawable.gallery);
+        if (holder.ivPreview != null) {
+            List<String> images = project.getImageData();
+            if (images != null && !images.isEmpty()) {
+                com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                        .load(images.get(0)).placeholder(R.drawable.gallery).into(holder.ivPreview);
+            }
         }
 
-        if (holder.tvProgram != null) {
-            holder.tvProgram.setText(project.getProgram());
-        }
-
-        if (holder.cardView != null) {
-            holder.cardView.setOnClickListener(v -> {
-                Context context = v.getContext();
-                Intent intent = new Intent(context, ProjectPostsActivity.class);
-
-                intent.putExtra("PROJECT_NAME", project.getProjectName());
-                intent.putExtra("DESCRIPTION", project.getDescription());
-                intent.putExtra("UPLOADER", project.getUploader());
-                intent.putExtra("PROGRAM", project.getProgram());
-                intent.putExtra("YEAR", project.getYear());
-                intent.putExtra("COURSE", project.getCourse());
-                intent.putExtra("TECHNOLOGIES", project.getTechUsed());
-                intent.putExtra("CONTRIBUTORS", project.getContributors());
-
-                context.startActivity(intent);
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, ProjectPostsActivity.class);
+            intent.putExtra("PROJECT_NAME", project.getProjectName());
+            intent.putExtra("DESCRIPTION", project.getDescription());
+            intent.putExtra("UPLOADER", project.getUploader());
+            intent.putExtra("PROGRAM", project.getProgram());
+            intent.putExtra("YEAR", project.getYear());
+            intent.putExtra("COURSE", project.getCourse());
+            intent.putExtra("TECHNOLOGIES", project.getTechUsed());
+            intent.putExtra("CONTRIBUTORS", project.getContributors());
+            context.startActivity(intent);
+        });
+        
+        holder.descScrollView = holder.itemView.findViewById(R.id.descScrollView);
+        
+        if (holder.descScrollView != null) {
+            holder.descScrollView.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
             });
         }
     }
@@ -84,8 +82,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     }
 
     public static class ProjectViewHolder extends RecyclerView.ViewHolder {
+        public View descScrollView;
         androidx.cardview.widget.CardView cardView;
-        TextView tvProjectName, tvDescription, tvUploader, tvProgram;
+        TextView tvProjectName, tvDescription, tvUploader, tvCourse, tvProgram;
         ImageView ivPreview;
 
         public ProjectViewHolder(@NonNull View itemView) {
@@ -94,6 +93,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
             tvProjectName = itemView.findViewById(R.id.projectName);
             tvDescription = itemView.findViewById(R.id.projectDescription);
             tvUploader = itemView.findViewById(R.id.uploaderName);
+            tvCourse = itemView.findViewById(R.id.courseName);
             ivPreview = itemView.findViewById(R.id.projectPreview);
             tvProgram = itemView.findViewById(R.id.programTv);
         }

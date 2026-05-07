@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
@@ -34,7 +35,6 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
     public TextView headerTitle;
     private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear ,tvInitial, tvCourse, tvContributors;
-    private ImageView btnBack, ivArrowContributors;
     private ViewPager2 viewPager2;
     private TabLayout tabLayout;
     private CardView contributorsCard;
@@ -42,6 +42,8 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
     private Button btnContact;
     private String realUploaderUid;
+    private String currentProjectId;
+    private ImageView btnBack, ivArrowContributors, btnMoreOptions; // Added btnMoreOptionsprivate String currentProjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +75,14 @@ public class ProjectPostsActivity extends AppCompatActivity {
         View backHeader = findViewById(R.id.back_header);
         headerTitle = backHeader.findViewById(R.id.header_title);
         btnBack = backHeader.findViewById(R.id.btn_back);
+        btnMoreOptions = backHeader.findViewById(R.id.btnMoreOptions);
 
         btnContact = findViewById(R.id.btn_contact);
+
+        //more options for bookmark
+        if (btnMoreOptions != null) {
+            btnMoreOptions.setOnClickListener(v -> showBottomSheet());
+        }
 
         String name = getIntent().getStringExtra("PROJECT_NAME");
         String desc = getIntent().getStringExtra("DESCRIPTION");
@@ -190,6 +198,7 @@ public class ProjectPostsActivity extends AppCompatActivity {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
 
+                            currentProjectId = doc.getId();
                             realUploaderUid = doc.getString("uploaderUid");
 
                             List<String> images = (List<String>) doc.get("imageData");
@@ -250,5 +259,52 @@ public class ProjectPostsActivity extends AppCompatActivity {
                 arrow.animate().rotation(0).setDuration(250).start();
             }
         });
+    }
+
+    private void showBottomSheet() {
+        if (currentProjectId == null) {
+            Toast.makeText(this, "Project loading, please wait...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.layout_bookmark, null);
+
+        TextView btnSave = view.findViewById(R.id.bs_save);
+
+        if (isProjectBookmarked(currentProjectId)) {
+            btnSave.setText("Remove from Bookmarks");
+        } else {
+            btnSave.setText("Save to Bookmarks");
+        }
+
+        btnSave.setOnClickListener(v -> {
+            toggleBookmark(currentProjectId);
+            bottomSheetDialog.dismiss();
+        });
+
+        bottomSheetDialog.setContentView(view);
+        bottomSheetDialog.show();
+    }
+
+    //method saving and checking bookmakrs
+    private boolean isProjectBookmarked(String projectId) {
+        android.content.SharedPreferences preferences = getSharedPreferences("Bookmarks", MODE_PRIVATE);
+        java.util.Set<String> bookmarks = preferences.getStringSet("bookmarked_ids", new java.util.HashSet<>());
+        return bookmarks.contains(projectId);
+    }
+
+    private void toggleBookmark(String projectId) {
+        android.content.SharedPreferences preferences = getSharedPreferences("Bookmarks", MODE_PRIVATE);
+        java.util.Set<String> bookmarks = new java.util.HashSet<>(preferences.getStringSet("bookmarked_ids", new java.util.HashSet<>()));
+
+        if (bookmarks.contains(projectId)) {
+            bookmarks.remove(projectId);
+            Toast.makeText(this, "Removed from Bookmarks", Toast.LENGTH_SHORT).show();
+        } else {
+            bookmarks.add(projectId);
+            Toast.makeText(this, "Saved to Bookmarks", Toast.LENGTH_SHORT).show();
+        }
+        preferences.edit().putStringSet("bookmarked_ids", bookmarks).apply();
     }
 }

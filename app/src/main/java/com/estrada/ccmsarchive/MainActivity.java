@@ -3,6 +3,7 @@ package com.estrada.ccmsarchive;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -136,6 +137,29 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             drawerLayout.closeDrawers();
         });
+
+        //SEARCH BAR
+
+        EditText searchBar = findViewById(R.id.search_bar);
+
+        searchBar.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                // Not needed for this example
+
+            @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.frameLayout);
+
+                    if (currentFragment instanceof HomeFragment) {
+                        ((HomeFragment) currentFragment).performSearch(s.toString());
+                    }
+                }
+                @Override
+                        public void afterTextChanged(android.text.Editable s) {}
+
+            });
+
     }
 
     public void setUIVisibility(boolean isMainPage) {
