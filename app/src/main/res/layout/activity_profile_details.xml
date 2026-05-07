@@ -31,7 +31,7 @@
             app:cardBackgroundColor="#B5AEAE"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="@+id/programYearText"
-            app:layout_constraintStart_toEndOf="@+id/cardView"
+            app:layout_constraintStart_toEndOf="@+id/cardViewPending"
             app:layout_constraintTop_toBottomOf="@+id/programYearText">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/my_posts"
+                    android:text="My Projects (0)"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -123,7 +123,7 @@
             app:srcCompat="@drawable/learning" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+            android:id="@+id/cardViewPending"
             android:layout_width="114dp"
             android:layout_height="24dp"
             android:layout_marginStart="15dp"
@@ -138,11 +138,11 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/myProjectsLabel"
+                    android:id="@+id/myProjectsLabelPending"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/my_posts"
+                    android:text="Pending (0)"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
