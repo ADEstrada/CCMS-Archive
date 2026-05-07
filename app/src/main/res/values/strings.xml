@@ -32,7 +32,7 @@
     <string name="menu_sign_out">Sign Out</string>
 
     <string name="header_title_placeholder">Title</string>
-    <string name="title_saved_projects">Saved Projects</string>
+    <string name="title_saved_projects">Bookmark</string>
     <string name="desc_back_button">Go back</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
