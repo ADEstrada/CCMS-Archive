@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,6 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -140,7 +144,6 @@ public class PostActivity extends AppCompatActivity {
         String title = project_title_field.getText().toString().trim();
         String yearStr = year_field.getText().toString().trim();
 
-        // 1. Basic empty check
         if (title.isEmpty() || selectedImageUris.isEmpty() || yearStr.isEmpty()) {
             Toast.makeText(this, "Title, Year, and images are required", Toast.LENGTH_SHORT).show();
             return;
@@ -162,45 +165,36 @@ public class PostActivity extends AppCompatActivity {
         } */
 
 
-        long totalSize = 0;
-        for (Uri uri : selectedImageUris) {
-            try {
-                java.io.InputStream inputStream = getContentResolver().openInputStream(uri);
-                if (inputStream != null) {
-                    totalSize += inputStream.available();
-                    inputStream.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (totalSize > 700000) {
-            Toast.makeText(this, "Files are too large! Please remove some photos or use smaller ones.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         btnPost.setEnabled(false);
         Toast.makeText(this, "Saving project... Please wait.", Toast.LENGTH_SHORT).show();
 
-        List<String> base64Images = new ArrayList<>();
-        for (Uri uri : selectedImageUris) {
-            String encoded = encodeImage(uri);
-            if (encoded != null) base64Images.add(encoded);
-        }
-
-        saveToFirestore(base64Images);
-    }
-
-    private String encodeImage(Uri uri) {
+        List<String> uploadedUrls = new ArrayList<>();
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
-            byte[] b = baos.toByteArray();
-            return Base64.encodeToString(b, Base64.DEFAULT);
-        } catch (IOException e) {
-            return null;
+            Map config = new HashMap();
+            config.put("cloud_name", "dmmxmvhiz");
+            config.put("api_key", "861187866891224");
+            config.put("api_secret", "swm-eqgYt72R58Oa1APxuC_hEUY");
+            MediaManager.init(this, config);
+        } catch (Exception e) {}
+
+        for (Uri uri : selectedImageUris) {
+            MediaManager.get().upload(uri)
+                    .option("upload_preset", "ml_default")
+                    .callback(new UploadCallback() {
+                        @Override public void onStart(String requestId) {}
+                        @Override public void onProgress(String requestId, long bytes, long totalBytes) {}
+                        @Override public void onSuccess(String requestId, Map resultData) {
+                            uploadedUrls.add((String) resultData.get("secure_url"));
+                            if (uploadedUrls.size() == selectedImageUris.size()) {
+                                saveToFirestore(uploadedUrls);
+                            }
+                        }
+                        @Override public void onError(String requestId, ErrorInfo error) {
+                            btnPost.setEnabled(true);
+                            btnPost.setText("POST");
+                        }
+                        @Override public void onReschedule(String requestId, ErrorInfo error) {}
+                    }).dispatch();
         }
     }
 
@@ -278,7 +272,63 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
-    private void saveToFirestore(List<String> base64Images) {
+    private void sendEmailToProfessor(String title, String student, String desc, String projectId, String profEmail) {
+
+        String scriptUrl = "https://script.google.com/macros/s/AKfycbylCYSDCCW30SBE5zeGKy8Y4hgUP3T6TWLNfrstTgoMNSq4rJf0FRHwP61pjQteDRgA/exec";
+        String emailJsUrl = "https://api.emailjs.com/api/v1.0/email/send";
+
+
+        String approveLink = scriptUrl + "?id=" + projectId + "&action=Approved";
+        String rejectLink = scriptUrl + "?id=" + projectId + "&action=Rejected";
+
+        org.json.JSONObject jsonBody = new org.json.JSONObject();
+        try {
+            jsonBody.put("service_id", "service_ikm3exh");
+            jsonBody.put("template_id", "template_hbiz8r7");
+            jsonBody.put("user_id", "j7ae_X2G5hcKUvhM3");
+
+            org.json.JSONObject templateParams = new org.json.JSONObject();
+            templateParams.put("project_title", title);
+            templateParams.put("student_name", student);
+            templateParams.put("project_description", desc);
+            templateParams.put("approve_link", approveLink);
+            templateParams.put("reject_link", rejectLink);
+            templateParams.put("to_email", profEmail);
+            templateParams.put("date", new java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault()).format(new java.util.Date()));
+
+            jsonBody.put("template_params", templateParams);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+
+        com.android.volley.toolbox.StringRequest request = new com.android.volley.toolbox.StringRequest(
+                com.android.volley.Request.Method.POST, emailJsUrl,
+                response -> {
+                    android.util.Log.d("EmailJS", "Success! Response: " + response);
+                    Toast.makeText(PostActivity.this, "Project submitted for approval!", Toast.LENGTH_SHORT).show();
+                    finish();
+                },
+                error -> {
+                    android.util.Log.e("EmailJS", "Failed: " + error.toString());
+                    btnPost.setEnabled(true);
+                }
+        ) {
+            @Override
+            public byte[] getBody() {
+                return jsonBody.toString().getBytes();
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+        };
+
+        com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(this);
+        queue.add(request);
+    }
+
+    private void saveToFirestore(List<String> imageUrls) {
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("users").document(currentUid).get()
@@ -286,6 +336,12 @@ public class PostActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String fullName = documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName");
                         String program = documentSnapshot.getString("program");
+
+                        String rawTech = tech_used_field.getText().toString().trim();
+                        String rawContributors = contributors_field.getText().toString().trim();
+
+                        rawTech = rawTech.replaceAll(",\\s*$", "");
+                        rawContributors = rawContributors.replaceAll(",\\s*$", "");
 
                         Map<String, Object> project = new HashMap<>();
                         project.put("title", project_title_field.getText().toString().trim());
@@ -295,27 +351,46 @@ public class PostActivity extends AppCompatActivity {
                         project.put("program", program);
                         project.put("year", year_field.getText().toString().trim());
                         project.put("course", course_field.getText().toString().trim());
-                        project.put("technologies", tech_used_field.getText().toString().trim());
+
+                        project.put("technologies", rawTech);
+                        project.put("contributors", rawContributors);
+
                         project.put("instructor", prof_instructor_field.getText().toString().trim());
                         project.put("status", "Pending");
-                        project.put("contributors", contributors_field.getText().toString().trim());
-                        project.put("imageData", base64Images);
+
+                        project.put("imageData", imageUrls);
                         project.put("timestamp", FieldValue.serverTimestamp());
 
-                        db.collection("Projects").add(project)
+                        db.collection("Pending_Projects").add(project)
                                 .addOnSuccessListener(doc -> {
-                                    Toast.makeText(this, "Project Posted!", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                })
-                                .addOnFailureListener(e -> {
-                                    btnPost.setEnabled(true);
-                                    btnPost.setText("POST");
+                                    String generatedProjectId = doc.getId().trim();
+                                    String selectedProfName = prof_instructor_field.getText().toString().trim();
 
-                                    if (e.getMessage().contains("too large")) {
-                                        Toast.makeText(this, "Failed: Document is too large. Try removing a photo.", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(this, "Post failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
+                                    db.collection("Instructors").document(selectedProfName).get()
+                                            .addOnSuccessListener(profDoc -> {
+                                                if (profDoc.exists()) {
+                                                    String actualProfEmail = profDoc.getString("email");
+
+                                                    sendEmailToProfessor(
+                                                            project.get("title").toString(),
+                                                            fullName,
+                                                            project.get("description").toString(),
+                                                            generatedProjectId,
+                                                            actualProfEmail
+                                                    );
+
+                                                    Toast.makeText(this, "Submitted! Waiting for Prof's approval.", Toast.LENGTH_LONG).show();
+                                                    finish();
+                                                } else {
+                                                    Log.e("EmailError", "Instructor not found in DB");
+                                                    Toast.makeText(this, "Error: Instructor email not found.", Toast.LENGTH_SHORT).show();
+                                                    btnPost.setEnabled(true);
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("Firestore", "Failed to get Instructor", e);
+                                                btnPost.setEnabled(true);
+                                            });
                                 });
                     }
                 })
