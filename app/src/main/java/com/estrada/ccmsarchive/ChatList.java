@@ -94,50 +94,5 @@ public class ChatList extends AppCompatActivity {
                         }
                     }
                 });
-
-        // LOAD CONVERSATIONS
-        db.collection("Chats")
-                .whereArrayContains("participants", myId)
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) return;
-                    if (value != null) {
-                        userList.clear();
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-                            List<String> participants = (List<String>) doc.get("participants");
-                            if (participants == null) continue;
-
-                            String otherId = participants.get(0).equals(myId) ? participants.get(1) : participants.get(0);
-                            String lastMsg = doc.getString("lastMessage");
-
-                            Timestamp time = doc.getTimestamp("timestamp");
-                            String formattedTime = "";
-                            if (time != null) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd", Locale.getDefault());
-                                formattedTime = sdf.format(time.toDate());
-                            }
-
-                            final String finalTime = formattedTime;
-
-                            db.collection("users").document(otherId).get().addOnSuccessListener(userDoc -> {
-                                if (userDoc.exists()) {
-                                    String firstName = userDoc.getString("firstName");
-                                    String lastName = userDoc.getString("lastName");
-
-                                    String fInitial = (firstName != null && !firstName.isEmpty()) ? String.valueOf(firstName.charAt(0)) : "";
-                                    String lInitial = (lastName != null && !lastName.isEmpty()) ? String.valueOf(lastName.charAt(0)) : "";
-
-                                    String fullName = firstName + " " + lastName;
-                                    String combinedInitials = (fInitial + lInitial).toUpperCase();
-
-                                    userList.add(new ChatUser(fullName, lastMsg, finalTime, combinedInitials, otherId));
-                                    chatAdapter.notifyDataSetChanged();
-                                }
-                            });
-                        }
-                    }
-                });
-
-        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
-        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
 }

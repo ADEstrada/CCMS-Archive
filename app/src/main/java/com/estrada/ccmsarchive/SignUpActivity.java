@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,29 +15,46 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private TextView idLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        // Initialize Views
         EditText firstName = findViewById(R.id.first_name_field);
         EditText lastName = findViewById(R.id.last_name_field);
         EditText studentId = findViewById(R.id.studentID_field);
         EditText email = findViewById(R.id.email_field);
         EditText password = findViewById(R.id.password_field);
-
         Button signUpBtn = findViewById(R.id.loginBtn);
         Button hacBtn = findViewById(R.id.dha_btn);
+        idLabel = findViewById(R.id.sIDLabel);
+        RadioGroup roleGroup = findViewById(R.id.roleGroup);
 
+        roleGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radioInstructor) {
+                idLabel.setText("Instructor ID:");
+            } else {
+                idLabel.setText("Student ID:");
+            }
+        });
+
+        // 2. Have an Account Button
         hacBtn.setOnClickListener(v -> finish());
 
+        // 3. Sign Up Button Logic
         signUpBtn.setOnClickListener(v -> {
             String fName = firstName.getText().toString().trim();
             String lName = lastName.getText().toString().trim();
@@ -43,43 +62,55 @@ public class SignUpActivity extends AppCompatActivity {
             String emailInput = email.getText().toString().trim();
             String passwordInput = password.getText().toString().trim();
 
-            if (validateFields(firstName, fName, lastName, lName, studentId, studID, email, emailInput, password, passwordInput)) {
+            int selectedRole = roleGroup.getCheckedRadioButtonId();
+            String role = (selectedRole == R.id.radioInstructor) ? "Instructor" : "Student";
+            String masterlistPath = (role.equals("Instructor")) ? "instructor_masterlist" : "student_masterlist";
 
-                // --- STEP 1: VERIFY STUDENT ID IN MASTER LIST ---
-                db.collection("student_masterlist").document(studID).get()
+            if (validateFields(firstName, fName, lastName, lName, studentId, studID, email, emailInput, password, passwordInput, role)) {
+
+                db.collection(masterlistPath).document(studID).get()
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult().exists()) {
 
                                 String officialFirstName = task.getResult().getString("firstName");
                                 String officialLastName = task.getResult().getString("lastName");
-                                String program = task.getResult().getString("program");
-                                String year = task.getResult().getString("year");
 
-                                // --- STEP 2: COMPARE INPUT NAME WITH MASTER LIST ---
+                                String finalProgram;
+                                String finalYear;
+
+                                if (role.equals("Instructor")) {
+                                    finalProgram = "College of Computing and Multimedia Studies";
+                                    finalYear = task.getResult().getString("academicRank");
+                                } else {
+                                    finalProgram = task.getResult().getString("program");
+                                    finalYear = task.getResult().getString("year");
+                                }
+
                                 if (fName.equalsIgnoreCase(officialFirstName) && lName.equalsIgnoreCase(officialLastName)) {
-
-                                    // NAMES MATCH! Proceed to create Authentication account
                                     mAuth.createUserWithEmailAndPassword(emailInput, passwordInput)
                                             .addOnCompleteListener(authTask -> {
                                                 if (authTask.isSuccessful()) {
                                                     String userId = mAuth.getCurrentUser().getUid();
 
-                                                    java.util.Map<String, Object> user = new java.util.HashMap<>();
-                                                    user.put("firstName", officialFirstName); // Save the official name
+                                                    Map<String, Object> user = new HashMap<>();
+                                                    user.put("firstName", officialFirstName);
                                                     user.put("lastName", officialLastName);
-                                                    user.put("studentID", studID);
+                                                    user.put("idNumber", studID);
                                                     user.put("email", emailInput);
-                                                    user.put("program", program);
-                                                    user.put("year", year);
+                                                    user.put("program", finalProgram);
+                                                    user.put("year", finalYear);
+                                                    user.put("role", role);
 
-                                                    // --- STEP 3: SAVE TO APP USERS COLLECTION ---
                                                     db.collection("users").document(userId).set(user)
                                                             .addOnSuccessListener(aVoid -> {
-                                                                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                                                Intent intent;
+                                                                if (role.equals("Instructor")) {
+                                                                    intent = new Intent(SignUpActivity.this, InstructorMainActivity.class);
+                                                                } else {
+                                                                    intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                                                }
                                                                 intent.putExtra("FIRST_NAME", officialFirstName);
-                                                                intent.putExtra("LAST_NAME", officialLastName);
-                                                                intent.putExtra("PROGRAM", program);
-                                                                intent.putExtra("YEAR", year);
+                                                                intent.putExtra("ROLE", role);
                                                                 startActivity(intent);
                                                                 finish();
                                                             });
@@ -88,29 +119,24 @@ public class SignUpActivity extends AppCompatActivity {
                                                 }
                                             });
                                 } else {
-                                    // NAMES DO NOT MATCH MASTER LIST
-                                    firstName.setError("Name does not match CCMS records");
-                                    lastName.setError("Name does not match CCMS records");
-                                    Toast.makeText(this, "Name mismatch for this ID", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(this, "Name mismatch for " + role, Toast.LENGTH_LONG).show();
                                 }
                             } else {
-                                // ID NOT FOUND IN MASTER LIST
-                                studentId.setError("Student ID not found in CCMS records");
-                                Toast.makeText(this, "ID Verification failed", Toast.LENGTH_LONG).show();
+                                studentId.setError(role + " ID not found in masterlist");
                             }
                         });
             }
         });
     }
 
-    private boolean validateFields(EditText fnView, String fn, EditText lnView, String ln, EditText stIdView, String stID, EditText emView, String em, EditText pwView, String pw) {
+    private boolean validateFields(EditText fnView, String fn, EditText lnView, String ln, EditText stIdView, String stID, EditText emView, String em, EditText pwView, String pw, String role) {
         boolean isValid = true;
         if (TextUtils.isEmpty(fn)) { fnView.setError("First name is required"); isValid = false; }
         if (TextUtils.isEmpty(ln)) { lnView.setError("Last name is required"); isValid = false; }
 
         String idPattern = "^\\d{2}-\\d{4}$";
         if (TextUtils.isEmpty(stID)) {
-            stIdView.setError("Student ID is required");
+            stIdView.setError(role + " ID is required");
             isValid = false;
         } else if (!stID.matches(idPattern)) {
             stIdView.setError("Use format: 00-0000");

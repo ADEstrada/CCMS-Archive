@@ -103,6 +103,15 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
                             realUploaderUid = doc.getString("uploaderUid");
 
+                            String currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                            // ADDED - TO MAKE SURE SELF CANT CONTACT SELF
+                            if (realUploaderUid != null && realUploaderUid.equals(currentUserId)) {
+                                btnContact.setVisibility(View.GONE);
+                            } else {
+                                btnContact.setVisibility(View.VISIBLE);
+                            }
+
                             List<String> images = (List<String>) doc.get("imageData");
                             if (images != null && !images.isEmpty()) {
                                 ImageSliderAdapter adapter = new ImageSliderAdapter(images);

@@ -42,6 +42,7 @@ public class MessageActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String currentUserId;
     private String receiverId;
+    private com.google.firebase.firestore.ListenerRegistration chatListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,12 @@ public class MessageActivity extends AppCompatActivity {
         String name = getIntent().getStringExtra("USER_NAME");
         String initials = getIntent().getStringExtra("USER_INITIALS");
         receiverId = getIntent().getStringExtra("RECEIVER_ID");
+
+        if (receiverId == null || receiverId.isEmpty()) {
+            android.widget.Toast.makeText(this, "Error: Could not start chat (Missing User ID)", android.widget.Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         tvName.setText(name != null ? name : "User");
         tvInitials.setText(initials != null ? initials : "--");
@@ -116,13 +123,21 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private String getChatId(String id1, String id2) {
-        if (id1.compareTo(id2) < 0) return id1 + "_" + id2;
-        else return id2 + "_" + id1;
+        if (id1 == null || id2 == null) {
+            android.util.Log.e("CHAT_ERROR", "One of the IDs is null! id1: " + id1 + ", id2: " + id2);
+            return "temp_chat_id";
+        }
+
+        if (id1.compareTo(id2) < 0) {
+            return id1 + "_" + id2;
+        } else {
+            return id2 + "_" + id1;
+        }
     }
 
     private void listenForMessages() {
         String chatId = getChatId(currentUserId, receiverId);
-        db.collection("Chats").document(chatId)
+        chatListener = db.collection("Chats").document(chatId)
                 .collection("messages")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((value, error) -> {
@@ -153,5 +168,12 @@ public class MessageActivity extends AppCompatActivity {
                         rvMessages.scrollToPosition(messageList.size() - 1);
                     }
                 });
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (chatListener != null) {
+            chatListener.remove();
+        }
     }
 }
