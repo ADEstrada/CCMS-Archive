@@ -60,10 +60,17 @@ public class LoginActivity extends AppCompatActivity {
                                                 if (documentSnapshot.exists()) {
                                                     String fName = documentSnapshot.getString("firstName");
                                                     String lName = documentSnapshot.getString("lastName");
+                                                    String role = documentSnapshot.getString("role");
 
                                                     Toast.makeText(LoginActivity.this, "Welcome back, " + fName + "!", Toast.LENGTH_SHORT).show();
 
-                                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                    Intent intent;
+                                                    if ("Instructor".equals(role)) {
+                                                        intent = new Intent(LoginActivity.this, InstructorMainActivity.class);
+                                                    } else {
+                                                        intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                    }
+
                                                     intent.putExtra("FIRST_NAME", fName);
                                                     intent.putExtra("LAST_NAME", lName);
                                                     startActivity(intent);

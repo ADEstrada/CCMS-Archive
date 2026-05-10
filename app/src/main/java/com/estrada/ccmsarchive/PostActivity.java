@@ -398,52 +398,66 @@ public class PostActivity extends AppCompatActivity {
                         project.put("program", program);
                         project.put("year", year_field.getText().toString().trim());
                         project.put("course", course_field.getText().toString().trim());
-
                         project.put("technologies", rawTech);
                         project.put("contributors", rawContributors);
-
                         project.put("instructor", prof_instructor_field.getText().toString().trim());
                         project.put("status", "Pending");
-
                         project.put("imageData", imageUrls);
                         project.put("timestamp", FieldValue.serverTimestamp());
 
+                        // I-save muna ang project sa Pending_Projects
                         db.collection("Pending_Projects").add(project)
                                 .addOnSuccessListener(doc -> {
-                                    String generatedProjectId = doc.getId().trim();
+                                    String generatedProjectId = doc.getId();
                                     String selectedProfName = prof_instructor_field.getText().toString().trim();
 
-                                    db.collection("Instructors").document(selectedProfName).get()
-                                            .addOnSuccessListener(profDoc -> {
-                                                if (profDoc.exists()) {
-                                                    String actualProfEmail = profDoc.getString("email");
-
-                                                    sendEmailToProfessor(
-                                                            project.get("title").toString(),
-                                                            fullName,
-                                                            project.get("description").toString(),
-                                                            generatedProjectId,
-                                                            actualProfEmail
-                                                    );
-
-                                                    Toast.makeText(this, "Submitted! Waiting for Prof's approval.", Toast.LENGTH_LONG).show();
-                                                    finish();
-                                                } else {
-                                                    Log.e("EmailError", "Instructor not found in DB");
-                                                    Toast.makeText(this, "Error: Instructor email not found.", Toast.LENGTH_SHORT).show();
-                                                    btnPost.setEnabled(true);
+                                    // --- SMART CHECK: May account ba si Prof sa App? ---
+                                    db.collection("users")
+                                            .whereEqualTo("role", "Instructor")
+                                            .get()
+                                            .addOnSuccessListener(querySnapshot -> {
+                                                String instructorUid = null;
+                                                for (com.google.firebase.firestore.DocumentSnapshot userDoc : querySnapshot) {
+                                                    String regName = userDoc.getString("firstName") + " " + userDoc.getString("lastName");
+                                                    if (regName.equalsIgnoreCase(selectedProfName)) {
+                                                        instructorUid = userDoc.getId();
+                                                        break;
+                                                    }
                                                 }
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Log.e("Firestore", "Failed to get Instructor", e);
-                                                btnPost.setEnabled(true);
+
+                                                if (instructorUid != null) {
+                                                    // MAY ACCOUNT: Update project doc para lumabas sa ApprovalFragment ni Prof
+                                                    db.collection("Pending_Projects").document(generatedProjectId)
+                                                            .update("instructorUid", instructorUid)
+                                                            .addOnSuccessListener(aVoid -> {
+                                                                Toast.makeText(this, "Submitted! Prof will review this in-app.", Toast.LENGTH_LONG).show();
+                                                                finish();
+                                                            });
+                                                } else {
+                                                    // WALANG ACCOUNT: Gamitin ang original Email logic mo
+                                                    db.collection("Instructors").document(selectedProfName).get()
+                                                            .addOnSuccessListener(profDoc -> {
+                                                                if (profDoc.exists()) {
+                                                                    String actualProfEmail = profDoc.getString("email");
+                                                                    sendEmailToProfessor(
+                                                                            project.get("title").toString(),
+                                                                            fullName,
+                                                                            project.get("description").toString(),
+                                                                            generatedProjectId,
+                                                                            actualProfEmail
+                                                                    );
+                                                                } else {
+                                                                    Toast.makeText(this, "Instructor email not found in masterlist.", Toast.LENGTH_SHORT).show();
+                                                                    btnPost.setEnabled(true);
+                                                                }
+                                                            });
+                                                }
                                             });
                                 });
                     }
                 })
                 .addOnFailureListener(e -> {
                     btnPost.setEnabled(true);
-                    btnPost.setText("POST");
                     Toast.makeText(this, "Error fetching user data.", Toast.LENGTH_SHORT).show();
                 });
     }
