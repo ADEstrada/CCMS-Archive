@@ -7,16 +7,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,41 +72,51 @@ public class BookmarkFragment extends Fragment {
     }
 
     private void loadBookmarkedProjects() {
-        SharedPreferences preferences = requireContext().getSharedPreferences("Bookmarks", Context.MODE_PRIVATE);
-        Set<String> bookmarkedIds = preferences.getStringSet("bookmarked_ids", new HashSet<>());
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
+
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         projectList.clear();
 
-        if (bookmarkedIds.isEmpty()) {
-            adapter.updateList(projectList);
-            return;
-        }
+        db.collection("Users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> bookmarkedIDs = (List<String>) documentSnapshot.get("bookmarks");
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        for (String id : bookmarkedIds) {
-            db.collection("Projects").document(id).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String title = documentSnapshot.getString("title");
-                            String description = documentSnapshot.getString("description");
-                            String uploader = documentSnapshot.getString("uploader");
-                            String program = documentSnapshot.getString("program");
-                            String year = documentSnapshot.getString("year");
-                            List<String> imageData = (List<String>) documentSnapshot.get("imageData");
-                            String course = documentSnapshot.getString("course");
-                            String status = documentSnapshot.getString("status");
-                            String contributors = documentSnapshot.getString("contributors");
-                            String techUsed = documentSnapshot.getString("technologies");
+                        if (bookmarkedIDs != null && !bookmarkedIDs.isEmpty()) {
+                            db.collection("Projects")
+                                    .whereIn(FieldPath.documentId(), bookmarkedIDs)
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        projectList.clear();
+                                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                            String title = doc.getString("title");
+                                            String desc = doc.getString("description");
+                                            String uploader = doc.getString("uploader");
+                                            String program = doc.getString("program");
+                                            String year = doc.getString("year");
+                                            List<String> images = (List<String>) doc.get("imageData");
+                                            String status = doc.getString("status");
+                                            String course = doc.getString("course");
+                                            String tech = doc.getString("technologies");
+                                            String contributors = doc.getString("contributors");
 
-                            ProjectPreview project = new ProjectPreview(title, description, uploader, program, year, imageData, status, course, techUsed, contributors);
-
-
-                            projectList.add(project);
+                                            ProjectPreview project = new ProjectPreview(
+                                                    title, desc, uploader, program, year, images,
+                                                    status, course, tech, contributors
+                                            );
+                                            projectList.add(project);
+                                        }
+                                        adapter.updateList(projectList);
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching projects", e));
+                        } else {
+                            projectList.clear();
                             adapter.updateList(projectList);
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                    });
-        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error loading bookmarks", e));
     }
 }

@@ -2,12 +2,21 @@ package com.estrada.ccmsarchive;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+    public interface OnDeleteClickListener {
+        void onDeleteClick(PostPreview project, int position);
+    }
+
+    private OnDeleteClickListener deleteListener;
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
+    }
     private List<PostPreview> postList;
     private int layout_id;
 
@@ -25,6 +34,26 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
+        PostPreview project = postList.get(position);
+
+        holder.tvProjectName.setText(project.getProjectName());
+        holder.tvStatus.setText(project.getStatus());
+
+        if ("Pending".equalsIgnoreCase(project.getStatus())) {
+            holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#FFA500")); // Orange
+        } else if ("Approved".equalsIgnoreCase(project.getStatus())) {
+            holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#008000")); // Green
+        } else {
+            holder.tvStatus.setTextColor(android.graphics.Color.parseColor("#F20B0B")); // Red
+        }
+
+        if (holder.btnDelete != null) {
+            holder.btnDelete.setOnClickListener(v -> {
+                if (deleteListener != null) {
+                    deleteListener.onDeleteClick(project, position);
+                }
+            });
+        }
         PostPreview post = postList.get(position);
         holder.tvProjectName.setText(post.getProjectName());
         holder.tvStatus.setText(post.getStatus());
@@ -35,10 +64,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView tvProjectName, tvStatus;
+        ImageButton btnDelete;
+
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             tvProjectName = itemView.findViewById(R.id.projectName);
             tvStatus = itemView.findViewById(R.id.statusText);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }
+
 }

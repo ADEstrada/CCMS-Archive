@@ -74,6 +74,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                 return false;
             });
         }
+
     }
 
     @Override
