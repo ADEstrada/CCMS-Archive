@@ -22,9 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cloudinary.android.MediaManager;
-import com.cloudinary.android.callback.ErrorInfo;
-import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,6 +32,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 
 public class PostActivity extends AppCompatActivity {
 
@@ -71,7 +71,6 @@ public class PostActivity extends AppCompatActivity {
         if (headerTitle != null) {
             headerTitle.setText(R.string.title_post);
         }
-
         project_title_field = findViewById(R.id.project_title_field);
         course_field = findViewById(R.id.course_field);
         desc_field = findViewById(R.id.desc_field);
@@ -90,7 +89,37 @@ public class PostActivity extends AppCompatActivity {
         // CONTRIBUTORS
         userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, userSuggestions);
         contributors_field.setAdapter(userAdapter);
-        contributors_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        contributors_field.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() {
+            @Override
+            public int findTokenStart(CharSequence text, int cursor) {
+                int i = cursor;
+                while (i > 0 && text.charAt(i - 1) != ',') { i--; }
+                while (i < cursor && text.charAt(i) == ' ') { i++; }
+                return i;
+            }
+            @Override
+            public int findTokenEnd(CharSequence text, int cursor) {
+                int i = cursor;
+                int len = text.length();
+                while (i < len) {
+                    if (text.charAt(i) == ',') return i;
+                    else i++;
+                }
+                return len;
+            }
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                int i = text.length();
+                while (i > 0 && text.charAt(i - 1) == ' ') { i--; }
+
+                if (i > 0 && text.charAt(i - 1) == ',') {
+                    return text;
+                } else {
+                    return text;
+                }
+            }
+        });
+
         contributors_field.setThreshold(1);
         fetchRegisteredUsers();
 
@@ -103,7 +132,36 @@ public class PostActivity extends AppCompatActivity {
         // TECH USED
         techAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, techSuggestions);
         tech_used_field.setAdapter(techAdapter);
-        tech_used_field.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        tech_used_field.setTokenizer(new MultiAutoCompleteTextView.Tokenizer() {
+            @Override
+            public int findTokenStart(CharSequence text, int cursor) {
+                int i = cursor;
+                while (i > 0 && text.charAt(i - 1) != ',') { i--; }
+                while (i < cursor && text.charAt(i) == ' ') { i++; }
+                return i;
+            }
+            @Override
+            public int findTokenEnd(CharSequence text, int cursor) {
+                int i = cursor;
+                int len = text.length();
+                while (i < len) {
+                    if (text.charAt(i) == ',') return i;
+                    else i++;
+                }
+                return len;
+            }
+            @Override
+            public CharSequence terminateToken(CharSequence text) {
+                int i = text.length();
+                while (i > 0 && text.charAt(i - 1) == ' ') { i--; }
+
+                if (i > 0 && text.charAt(i - 1) == ',') {
+                    return text;
+                } else {
+                    return text;
+                }
+            }
+        });
         tech_used_field.setThreshold(1);
         fetchTechData();
 
@@ -304,6 +362,7 @@ public class PostActivity extends AppCompatActivity {
             templateParams.put("approve_link", approveLink);
             templateParams.put("reject_link", rejectLink);
             templateParams.put("to_email", profEmail);
+            templateParams.put("from_name", "CCMS Archive");
             templateParams.put("date", new java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault()).format(new java.util.Date()));
 
             jsonBody.put("template_params", templateParams);
@@ -338,91 +397,90 @@ public class PostActivity extends AppCompatActivity {
         queue.add(request);
     }
 
+    private void saveToFirestore(List<String> imageUrls) {
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        private void saveToFirestore(List<String> imageUrls) {
-            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users").document(currentUid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String fullName = documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName");
+                        String program = documentSnapshot.getString("program");
 
-            db.collection("users").document(currentUid).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String fullName = documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName");
-                            String program = documentSnapshot.getString("program");
+                        String rawTech = tech_used_field.getText().toString().trim();
+                        String rawContributors = contributors_field.getText().toString().trim();
 
-                            String rawTech = tech_used_field.getText().toString().trim();
-                            String rawContributors = contributors_field.getText().toString().trim();
+                        rawTech = rawTech.replaceAll(",\\s*$", "");
+                        rawContributors = rawContributors.replaceAll(",\\s*$", "");
 
-                            rawTech = rawTech.replaceAll(",\\s*$", "");
-                            rawContributors = rawContributors.replaceAll(",\\s*$", "");
+                        Map<String, Object> project = new HashMap<>();
+                        project.put("title", project_title_field.getText().toString().trim());
+                        project.put("description", desc_field.getText().toString().trim());
+                        project.put("uploader", fullName);
+                        project.put("uploaderUid", currentUid);
+                        project.put("program", program);
+                        project.put("year", year_field.getText().toString().trim());
+                        project.put("course", course_field.getText().toString().trim());
+                        project.put("technologies", rawTech);
+                        project.put("contributors", rawContributors);
+                        project.put("instructor", prof_instructor_field.getText().toString().trim());
+                        project.put("status", "Pending");
+                        project.put("imageData", imageUrls);
+                        project.put("timestamp", FieldValue.serverTimestamp());
 
-                            Map<String, Object> project = new HashMap<>();
-                            project.put("title", project_title_field.getText().toString().trim());
-                            project.put("description", desc_field.getText().toString().trim());
-                            project.put("uploader", fullName);
-                            project.put("uploaderUid", currentUid);
-                            project.put("program", program);
-                            project.put("year", year_field.getText().toString().trim());
-                            project.put("course", course_field.getText().toString().trim());
-                            project.put("technologies", rawTech);
-                            project.put("contributors", rawContributors);
-                            project.put("instructor", prof_instructor_field.getText().toString().trim());
-                            project.put("status", "Pending");
-                            project.put("imageData", imageUrls);
-                            project.put("timestamp", FieldValue.serverTimestamp());
 
-                            // I-save muna ang project sa Pending_Projects
-                            db.collection("Pending_Projects").add(project)
-                                    .addOnSuccessListener(doc -> {
-                                        String generatedProjectId = doc.getId();
-                                        String selectedProfName = prof_instructor_field.getText().toString().trim();
+                        db.collection("Pending_Projects").add(project)
+                                .addOnSuccessListener(doc -> {
+                                    String generatedProjectId = doc.getId();
+                                    String selectedProfName = prof_instructor_field.getText().toString().trim();
 
-                                        // --- SMART CHECK: May account ba si Prof sa App? ---
-                                        db.collection("users")
-                                                .whereEqualTo("role", "Instructor")
-                                                .get()
-                                                .addOnSuccessListener(querySnapshot -> {
-                                                    String instructorUid = null;
-                                                    for (com.google.firebase.firestore.DocumentSnapshot userDoc : querySnapshot) {
-                                                        String regName = userDoc.getString("firstName") + " " + userDoc.getString("lastName");
-                                                        if (regName.equalsIgnoreCase(selectedProfName)) {
-                                                            instructorUid = userDoc.getId();
-                                                            break;
-                                                        }
+                                    // --- SMART CHECK: May account ba si Prof sa App? ---
+                                    db.collection("users")
+                                            .whereEqualTo("role", "Instructor")
+                                            .get()
+                                            .addOnSuccessListener(querySnapshot -> {
+                                                String instructorUid = null;
+                                                for (com.google.firebase.firestore.DocumentSnapshot userDoc : querySnapshot) {
+                                                    String regName = userDoc.getString("firstName") + " " + userDoc.getString("lastName");
+                                                    if (regName.equalsIgnoreCase(selectedProfName)) {
+                                                        instructorUid = userDoc.getId();
+                                                        break;
                                                     }
+                                                }
 
-                                                    if (instructorUid != null) {
-                                                        // MAY ACCOUNT: Update project doc para lumabas sa ApprovalFragment ni Prof
-                                                        db.collection("Pending_Projects").document(generatedProjectId)
-                                                                .update("instructorUid", instructorUid)
-                                                                .addOnSuccessListener(aVoid -> {
-                                                                    Toast.makeText(this, "Submitted! Prof will review this in-app.", Toast.LENGTH_LONG).show();
-                                                                    finish();
-                                                                });
-                                                    } else {
-                                                        // WALANG ACCOUNT: Gamitin ang original Email logic mo
-                                                        db.collection("Instructors").document(selectedProfName).get()
-                                                                .addOnSuccessListener(profDoc -> {
-                                                                    if (profDoc.exists()) {
-                                                                        String actualProfEmail = profDoc.getString("email");
-                                                                        sendEmailToProfessor(
-                                                                                project.get("title").toString(),
-                                                                                fullName,
-                                                                                project.get("description").toString(),
-                                                                                generatedProjectId,
-                                                                                actualProfEmail
-                                                                        );
-                                                                    } else {
-                                                                        Toast.makeText(this, "Instructor email not found in masterlist.", Toast.LENGTH_SHORT).show();
-                                                                        btnPost.setEnabled(true);
-                                                                    }
-                                                                });
-                                                    }
-                                                });
-                                    });
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        btnPost.setEnabled(true);
-                        Toast.makeText(this, "Error fetching user data.", Toast.LENGTH_SHORT).show();
-                    });
-        }
+                                                if (instructorUid != null) {
+                                                    // MAY ACCOUNT: Update project doc para lumabas sa ApprovalFragment ni Prof
+                                                    db.collection("Pending_Projects").document(generatedProjectId)
+                                                            .update("instructorUid", instructorUid)
+                                                            .addOnSuccessListener(aVoid -> {
+                                                                Toast.makeText(this, "Submitted! Prof will review this in-app.", Toast.LENGTH_LONG).show();
+                                                                finish();
+                                                            });
+                                                } else {
+                                                    // WALANG ACCOUNT: Gamitin ang original Email
+                                                    db.collection("Instructors").document(selectedProfName).get()
+                                                            .addOnSuccessListener(profDoc -> {
+                                                                if (profDoc.exists()) {
+                                                                    String actualProfEmail = profDoc.getString("email");
+                                                                    sendEmailToProfessor(
+                                                                            project.get("title").toString(),
+                                                                            fullName,
+                                                                            project.get("description").toString(),
+                                                                            generatedProjectId,
+                                                                            actualProfEmail
+                                                                    );
+                                                                } else {
+                                                                    Toast.makeText(this, "Instructor email not found in masterlist.", Toast.LENGTH_SHORT).show();
+                                                                    btnPost.setEnabled(true);
+                                                                }
+                                                            });
+                                                }
+                                            });
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnPost.setEnabled(true);
+                    Toast.makeText(this, "Error fetching user data.", Toast.LENGTH_SHORT).show();
+                });
     }
+}
