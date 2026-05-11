@@ -5,17 +5,11 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
-import java.util.HashSet;
-import java.util.Set;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +40,7 @@ public class BookmarkFragment extends Fragment {
 
         headerTitle = view.findViewById(R.id.header_title);
         btnBack = view.findViewById(R.id.btn_back);
-        rvBookmarks = view.findViewById(R.id.rvBookmarks);
+        rvBookmarks = view.findViewById(R.id.rvBookmark);
 
         rvBookmarks.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProjectAdapter(projectList, R.layout.saved_project);

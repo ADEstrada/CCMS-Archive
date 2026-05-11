@@ -1,12 +1,10 @@
 package com.estrada.ccmsarchive;
 import android.content.Intent;
 import com.bumptech.glide.Glide;
-
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,15 +19,24 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import java.util.List;
 
@@ -37,7 +44,6 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
     public TextView headerTitle;
     private TextView tvProjectName, tvDescription, tvStudentName, tvProgram, tvYear ,tvInitial, tvCourse, tvContributors;
-    private ImageView btnBack, ivArrowContributors;
     private ViewPager2 viewPager2;
     private TabLayout tabLayout;
     private CardView contributorsCard;
@@ -45,6 +51,8 @@ public class ProjectPostsActivity extends AppCompatActivity {
 
     private Button btnContact;
     private String realUploaderUid;
+    private String currentProjectId;
+    private ImageView btnBack, ivArrowContributors, btnMoreOptions; // Added btnMoreOptions
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +71,8 @@ public class ProjectPostsActivity extends AppCompatActivity {
         tvProjectName = findViewById(R.id.projectName);
         tvDescription = findViewById(R.id.description);
         tvStudentName = findViewById(R.id.studentNameTv);
-        tvProgram = findViewById(R.id.programAndYearTv);
+        tvProgram = findViewById(R.id.programTv);
+        tvYear = findViewById(R.id.yearTv);
         tvInitial = findViewById(R.id.tvInitial);
         tvCourse = findViewById(R.id.courseTV);
         viewPager2 = findViewById(R.id.viewPagerImages);
@@ -75,8 +84,18 @@ public class ProjectPostsActivity extends AppCompatActivity {
         View backHeader = findViewById(R.id.back_header);
         headerTitle = backHeader.findViewById(R.id.header_title);
         btnBack = backHeader.findViewById(R.id.btn_back);
+        btnMoreOptions = backHeader.findViewById(R.id.btnMoreOptions);
 
         btnContact = findViewById(R.id.btn_contact);
+
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
+
+        //more options for bookmark
+        if (btnMoreOptions != null) {
+            btnMoreOptions.setOnClickListener(v -> showBottomSheet());
+        }
 
         String name = getIntent().getStringExtra("PROJECT_NAME");
         String desc = getIntent().getStringExtra("DESCRIPTION");
@@ -95,6 +114,7 @@ public class ProjectPostsActivity extends AppCompatActivity {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
 
+                            currentProjectId = doc.getId();
                             realUploaderUid = doc.getString("uploaderUid");
 
                             String currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -186,31 +206,11 @@ public class ProjectPostsActivity extends AppCompatActivity {
                     Chip chip = new Chip(this);
                     chip.setText(cleanTech);
                     chip.setChipStrokeWidth(2f);
-                    chip.setChipStrokeColor(ColorStateList.valueOf(Color.parseColor("#5E0006")));
-                    chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#33FF0000")));
+                    chip.setChipStrokeColorResource(android.R.color.darker_gray);
+                    chip.setChipBackgroundColorResource(android.R.color.transparent);
                     techChipGroup.addView(chip);
                 }
             }
-        }
-
-        if (name != null) {
-            FirebaseFirestore.getInstance().collection("Projects")
-                    .whereEqualTo("title", name)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-
-                            realUploaderUid = doc.getString("uploaderUid");
-
-                            List<String> images = (List<String>) doc.get("imageData");
-                            if (images != null && !images.isEmpty()) {
-                                ImageSliderAdapter adapter = new ImageSliderAdapter(images);
-                                viewPager2.setAdapter(adapter);
-                                new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {}).attach();
-                            }
-                        }
-                    });
         }
 
         if (headerTitle != null) headerTitle.setText(R.string.title_post);
@@ -257,6 +257,89 @@ public class ProjectPostsActivity extends AppCompatActivity {
             } else {
                 content.setVisibility(View.GONE);
                 arrow.animate().rotation(0).setDuration(250).start();
+            }
+        });
+    }
+
+    private void showBottomSheet() {
+        if (currentProjectId == null) {
+            Toast.makeText(this, "Project loading, please wait...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        isProjectBookmarked(currentProjectId, isBookmarked -> {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+            View view = getLayoutInflater().inflate(R.layout.layout_bookmark, null);
+
+            TextView btnSave = view.findViewById(R.id.bs_save);
+            btnSave.setText(isBookmarked ? "Remove from Bookmarks" : "Save to Bookmarks");
+
+            btnSave.setOnClickListener(v -> {
+                toggleBookmark(currentProjectId);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetDialog.setContentView(view);
+            bottomSheetDialog.show();
+        });
+    }
+
+    //method saving and checking bookmakrs
+    private void isProjectBookmarked(String projectId, BookmarkCallback callback) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance()
+                .collection("Users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> bookmarks = (List<String>) documentSnapshot.get("bookmarks");
+                        callback.onResult(bookmarks != null && bookmarks.contains(projectId));
+                    } else{
+                        callback.onResult(false);
+                    }
+                })
+                .addOnFailureListener(e -> callback.onResult(false));
+    }
+    interface BookmarkCallback {
+        void onResult(boolean isBookmarked);
+    }
+
+    private void toggleBookmark(String projectId) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "You must be logged in to bookmark a project.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        com.google.firebase.firestore.DocumentReference userReference =
+                com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("Users").document(userID);
+
+        isProjectBookmarked(projectId, isBookmarked -> {
+            if (isBookmarked) {
+                userReference.update("bookmarks", FieldValue.arrayRemove(projectId))
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Removed from Bookmarks", Toast.LENGTH_SHORT).show();
+                        })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error removing bookmark", Toast.LENGTH_SHORT).show());
+
+        } else {
+                Map<String, Object> data = new java.util.HashMap<>();
+                data.put("bookmarks", FieldValue.arrayUnion(projectId));
+
+                userReference.set(data, SetOptions.merge())
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Saved to Bookmarks", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(this, "Error saving bookmark", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> {
+                            Log.e("ProjectPostActivity", "Error saving bookmark", e);
+                            Toast.makeText(this, "Error saving bookmark", Toast.LENGTH_SHORT).show();
+
+                        });
             }
         });
     }
