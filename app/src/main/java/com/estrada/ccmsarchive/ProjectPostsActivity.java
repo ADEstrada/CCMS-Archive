@@ -19,6 +19,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -86,6 +87,10 @@ public class ProjectPostsActivity extends AppCompatActivity {
         btnMoreOptions = backHeader.findViewById(R.id.btnMoreOptions);
 
         btnContact = findViewById(R.id.btn_contact);
+
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         //more options for bookmark
         if (btnMoreOptions != null) {

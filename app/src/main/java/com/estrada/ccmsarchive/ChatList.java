@@ -25,6 +25,8 @@ public class ChatList extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private List<ChatUser> userList;
     private TextView headerTitle;
+
+    private ImageView btnBack;
     private FirebaseFirestore db;
 
     @Override
@@ -32,11 +34,15 @@ public class ChatList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
+        btnBack = findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(v -> finish());
+
         headerTitle = findViewById(R.id.header_title);
 
         if (headerTitle != null) {
             headerTitle.setText(R.string.messageTitle);
         }
+
 
         db = FirebaseFirestore.getInstance();
         String myId = FirebaseAuth.getInstance().getCurrentUser().getUid();
