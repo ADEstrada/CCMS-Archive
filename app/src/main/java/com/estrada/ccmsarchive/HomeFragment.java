@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
         RecyclerView rvHome = view.findViewById(R.id.rvHome);
         rvHome.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //fullList and filtered list
+        // FULL LIST AND FILTERED LIST
         fullList = new ArrayList<>();
         filteredList = new ArrayList<>();
 
@@ -183,7 +183,7 @@ public class HomeFragment extends Fragment {
             adapter.updateList(filteredList);
     }
 
-        //method for filter ng year, course, and program
+        // METHOD FOR FILTER OF YEAR, COURSE, AND PROGRAM
         private void fetchFilterOptions() {
             db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
                 masterYearList.clear();

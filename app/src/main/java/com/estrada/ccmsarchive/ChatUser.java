@@ -1,6 +1,7 @@
 package com.estrada.ccmsarchive;
 
 public class ChatUser {
+
     private String name;
     private String lastMessage;
     private String time;

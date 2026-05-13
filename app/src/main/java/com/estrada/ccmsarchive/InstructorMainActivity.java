@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 public class InstructorMainActivity extends AppCompatActivity {
 
@@ -24,12 +26,13 @@ public class InstructorMainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private TextView profileInitials;
     private TextView sidebarInitials;
-
     private TextView btnProfileDetails;
     private TextView btnEditProfile;
     private TextView btnChangePassword;
     private TextView btnAboutCCMS;
     private TextView sidebarFullName;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,15 @@ public class InstructorMainActivity extends AppCompatActivity {
         btnAboutCCMS = findViewById(R.id.menu_about);
         sidebarFullName = findViewById(R.id.sidebar_user_name);
         sidebarInitials = findViewById(R.id.sidebar_initials);
+
+        // SIGN OUT
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        TextView btnSignOut = navigationView.findViewById(R.id.btn_sign_out);
+
+        btnSignOut.setOnClickListener(v -> {
+            logoutUser();
+        });
 
         String firstName = getIntent().getStringExtra("FIRST_NAME");
         String lastName = getIntent().getStringExtra("LAST_NAME");
@@ -191,5 +203,18 @@ public class InstructorMainActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    private void logoutUser() {
+
+        com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
+
+
+        android.content.Intent intent = new android.content.Intent(InstructorMainActivity.this, LoginActivity.class);
+        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        finish();
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
     }
 }

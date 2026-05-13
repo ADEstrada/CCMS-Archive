@@ -1,13 +1,12 @@
 package com.estrada.ccmsarchive;
 
 public class Student {
-    private String studentId; // Ito ay manggagaling sa Key
+    private String studentId;
     private String firstName;
     private String lastName;
     private String program;
     private String year;
 
-    // Setters para sa ID
     public void setStudentId(String id) { this.studentId = id; }
 
     // Getters

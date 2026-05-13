@@ -24,18 +24,16 @@ public class DataSeederActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         statusText = findViewById(R.id.statusText);
 
-        // Initialize both buttons
         Button btnUploadStudents = findViewById(R.id.btnUploadStudents);
         Button btnUploadInstructors = findViewById(R.id.btnUploadInstructors);
         Button btnUploadCourses = findViewById(R.id.btnUploadCourses);
 
-
-        // Call specific methods for each button
         btnUploadStudents.setOnClickListener(v -> seedStudentData());
         btnUploadInstructors.setOnClickListener(v -> seedInstructorData());
         btnUploadCourses.setOnClickListener(v -> seedCourseData());
     }
 
+    // FOR STUDENTS
     private void seedStudentData() {
         List<Student> students = JsonHelper.getStudentList(this);
 
@@ -57,6 +55,7 @@ public class DataSeederActivity extends AppCompatActivity {
         }
     }
 
+    // FOR INSTRUCTORS
     private void seedInstructorData() {
         List<Instructor> instructors = JsonHelper.getInstructorMasterList(this);
 
@@ -77,6 +76,7 @@ public class DataSeederActivity extends AppCompatActivity {
         }
     }
 
+    // FOR COURSES
     private void seedCourseData() {
         List<Course> courses = JsonHelper.getCourseList(this);
 

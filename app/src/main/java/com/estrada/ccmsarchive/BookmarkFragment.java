@@ -30,14 +30,12 @@ import java.util.List;
 
 public class BookmarkFragment extends Fragment {
 
-    public BookmarkFragment() {
-    }
+    public BookmarkFragment() {}
 
     private RecyclerView rvBookmarks;
     private ProjectAdapter adapter;
     private ImageView btnBack;
     private TextView headerTitle;
-
     private List<ProjectPreview> projectList = new ArrayList<>();
 
     @Override

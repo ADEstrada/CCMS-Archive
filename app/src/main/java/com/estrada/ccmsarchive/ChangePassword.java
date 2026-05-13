@@ -32,7 +32,6 @@ public class ChangePassword extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        // Initialize UI Elements
         TextView headerTitle = findViewById(R.id.header_title);
         ImageView btnBack = findViewById(R.id.btn_back);
 
@@ -40,9 +39,8 @@ public class ChangePassword extends AppCompatActivity {
         newPassField = findViewById(R.id.newPassField);
         confirmLabel = findViewById(R.id.confirmPassLabel);
         confirmField = findViewById(R.id.confirmPassField);
-        updateBtn = findViewById(R.id.loginBtn2); // base sa XML mo: loginBtn2
+        updateBtn = findViewById(R.id.loginBtn2);
 
-        // HEADER
         if (headerTitle != null) {
             headerTitle.setText(R.string.menu_change_password);
         }
@@ -51,7 +49,7 @@ public class ChangePassword extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
         }
 
-        // --- SHOW/HIDE CONFIRM FIELDS ---
+        // SHOW/HIDE CONFIRM FIELDS
         newPassField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -70,7 +68,7 @@ public class ChangePassword extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // --- UPDATE PASSWORD LOGIC ---
+        // UPDATE PASSWORD LOGIC
         updateBtn.setOnClickListener(v -> {
             validateAndChangePassword();
         });
@@ -81,7 +79,7 @@ public class ChangePassword extends AppCompatActivity {
         String newPass = newPassField.getText().toString().trim();
         String confirmPass = confirmField.getText().toString().trim();
 
-        // 1. Basic Validations
+        // BASIC VALIDATIONS
         if (TextUtils.isEmpty(currentPass)) {
             currentPassField.setError("Required");
             return;
@@ -98,12 +96,12 @@ public class ChangePassword extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null && user.getEmail() != null) {
-            // 2. RE-AUTHENTICATION (Crucial step for Firebase)
+            // RE-AUTHENTICATION
             AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPass);
 
             user.reauthenticate(credential).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // 3. Update Password
+                    // UPDATE PASSWORD
                     user.updatePassword(newPass).addOnCompleteListener(updateTask -> {
                         if (updateTask.isSuccessful()) {
                             Toast.makeText(ChangePassword.this, "Password updated successfully!", Toast.LENGTH_SHORT).show();
