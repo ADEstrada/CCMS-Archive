@@ -1,0 +1,24 @@
+{
+  "IT100": { "courseName": "Introduction to Computing" },
+  "IT101": { "courseName": "Computer Programming 1" },
+  "IT102": { "courseName": "Computer Programming 2" },
+  "IT103": { "courseName": "Data Structures and Algorithms" },
+  "IT105": { "courseName": "Application Development and Emerging Technologies" },
+  "IT106": { "courseName": "Information Management"},
+  "IT107": { "courseName": "Introduction to Human-Computer Interaction" },
+  "IT109": { "courseName": "Fundamentals of Database Systems" },
+  "IT110": { "courseName": "Computer Architecture and Robotics" },
+  "IT111": { "courseName": "Integrative Programming Technologies"},
+  "IT112": { "courseName": "Mobile Applications" },
+  "IS100": { "courseName": "Introduction to Computing" },
+  "IS101": { "courseName": "Computer Programming 1" },
+  "IS102": { "courseName": "Computer Programming 2" },
+  "IS103": { "courseName": "Data Structures and Algorithms" },
+  "IS104": { "courseName": "Fundamentals of Information Systems" },
+  "IS105": { "courseName": "Organization and Management Concepts" },
+  "IS106": { "courseName": "Information Management" },
+  "IS107": { "courseName": "Application Development and Emerging Technologies" },
+  "IS108": { "courseName": "Financial Management" },
+  "IS109": { "courseName": "IT Infrastracture and Network Technologies" }
+
+}

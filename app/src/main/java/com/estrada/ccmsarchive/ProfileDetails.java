@@ -90,11 +90,15 @@ public class ProfileDetails extends AppCompatActivity {
                         db.collection(collection).document(project.getProjectId())
                                 .delete()
                                 .addOnSuccessListener(aVoid -> {
-                                    postList.remove(position);
-                                    adapter.notifyItemRemoved(position);
-                                    Toast.makeText(this, "Project delete.", Toast.LENGTH_SHORT).show();
+                                    // 2. STRENGTHENED SAFETY CHECK: Iwas IndexOutOfBoundsException
+                                    if (position >= 0 && position < postList.size()) {
+                                        postList.remove(position);
+                                        adapter.notifyItemRemoved(position);
+                                        adapter.notifyItemRangeChanged(position, postList.size());
+                                        Toast.makeText(this, "Project deleted.", Toast.LENGTH_SHORT).show();
+                                    }
                                 })
-                                .addOnFailureListener(e -> Toast.makeText(this, "Error deleting project!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> Toast.makeText(this, "Error deleting: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     })
                     .setNegativeButton("No", null)
                     .show();

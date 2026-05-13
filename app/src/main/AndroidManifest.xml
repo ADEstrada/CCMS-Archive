@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -13,54 +14,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CCMSArchive">
+
+        <!-- 1. IBALIK ANG SPLASHACTIVITY BILANG LAUNCHER -->
         <activity
-            android:name=".MessageActivity"
-            android:exported="false" />
+            android:name=".SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 2. ALISIN ANG LAUNCHER SA DATASEEDER (Secret Tap na lang ang magbubukas dito) -->
         <activity
-            android:name=".item_chat_user"
+            android:name=".DataSeederActivity"
             android:exported="false" />
-        <activity
-            android:name=".ChatList"
-            android:exported="false" />
-        <activity
-            android:name=".ProjectPostsActivity"
-            android:exported="false" />
+
+        <activity android:name=".MessageActivity" android:exported="false" />
+        <activity android:name=".item_chat_user" android:exported="false" />
+        <activity android:name=".ChatList" android:exported="false" />
+        <activity android:name=".ProjectPostsActivity" android:exported="false" />
         <activity
             android:name=".PostActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_post"
             android:theme="@style/Theme.CCMSArchive.Fullscreen" />
+        <activity android:name=".ProfileDetails" android:exported="false" />
+        <activity android:name=".AboutCCMS" android:exported="false" />
+        <activity android:name=".ChangePassword" android:exported="false" />
+        <activity android:name=".EditProfile" android:exported="false" />
+        <activity android:name=".SignUpActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".LoginActivity" android:exported="false" />
         <activity
-            android:name=".ProfileDetails"
+            android:name=".IntroActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false" />
-        <activity
-            android:name=".AboutCCMS"
-            android:exported="false" />
-        <activity
-            android:name=".ChangePassword"
-            android:exported="false" />
-        <activity
-            android:name=".EditProfile"
-            android:exported="false" />
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".InstructorMainActivity" android:exported="false" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".InstructorMainActivity"
-            android:exported="false" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

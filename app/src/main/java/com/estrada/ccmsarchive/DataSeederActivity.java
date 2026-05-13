@@ -1,0 +1,98 @@
+package com.estrada.ccmsarchive;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DataSeederActivity extends AppCompatActivity {
+
+    private FirebaseFirestore db;
+    private TextView statusText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_data_seeder);
+
+        db = FirebaseFirestore.getInstance();
+        statusText = findViewById(R.id.statusText);
+
+        // Initialize both buttons
+        Button btnUploadStudents = findViewById(R.id.btnUploadStudents);
+        Button btnUploadInstructors = findViewById(R.id.btnUploadInstructors);
+        Button btnUploadCourses = findViewById(R.id.btnUploadCourses);
+
+
+        // Call specific methods for each button
+        btnUploadStudents.setOnClickListener(v -> seedStudentData());
+        btnUploadInstructors.setOnClickListener(v -> seedInstructorData());
+        btnUploadCourses.setOnClickListener(v -> seedCourseData());
+    }
+
+    private void seedStudentData() {
+        List<Student> students = JsonHelper.getStudentList(this);
+
+        if (students != null && !students.isEmpty()) {
+            for (Student s : students) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", s.getFullName());
+                data.put("program", s.getProgram());
+                data.put("yearLevel", s.getYear());
+
+                db.collection("student_masterlist")
+                        .document(s.getStudentId())
+                        .set(data);
+            }
+            statusText.setText("Status: Student Masterlist Seeded!");
+            Toast.makeText(this, "Students uploaded!", Toast.LENGTH_SHORT).show();
+        } else {
+            statusText.setText("Status: No student data found.");
+        }
+    }
+
+    private void seedInstructorData() {
+        List<Instructor> instructors = JsonHelper.getInstructorMasterList(this);
+
+        if (instructors != null && !instructors.isEmpty()) {
+            for (Instructor i : instructors) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("email", i.getEmail());
+
+                db.collection("Instructors")
+                        .document(i.getName())
+                        .set(data)
+                        .addOnSuccessListener(aVoid -> Log.d("SEEDER", "Success: " + i.getName()));
+            }
+            statusText.setText("Status: Instructors Seeded!");
+            Toast.makeText(this, "Instructor masterlist updated!", Toast.LENGTH_SHORT).show();
+        } else {
+            statusText.setText("Status: Failed to read instructor JSON");
+        }
+    }
+
+    private void seedCourseData() {
+        List<Course> courses = JsonHelper.getCourseList(this);
+
+        if (courses != null && !courses.isEmpty()) {
+            for (Course c : courses) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("courseName", c.getCourseName());
+
+                db.collection("Courses")
+                        .document(c.getCourseCode())
+                        .set(data)
+                        .addOnSuccessListener(aVoid -> Log.d("SEEDER", "Course Added: " + c.getCourseCode()));
+            }
+            statusText.setText("Status: Courses Seeded!");
+            Toast.makeText(this, "Courses masterlist updated!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+}

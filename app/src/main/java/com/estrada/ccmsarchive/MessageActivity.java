@@ -123,7 +123,8 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private String getChatId(String id1, String id2) {
-        if (id1 == null || id2 == null) {
+        // 1. STRENGTHENED SAFETY CHECK: Iwas NullPointerException sa compareTo
+        if (id1 == null || id2 == null || id1.isEmpty() || id2.isEmpty()) {
             android.util.Log.e("CHAT_ERROR", "One of the IDs is null! id1: " + id1 + ", id2: " + id2);
             return "temp_chat_id";
         }
@@ -165,7 +166,9 @@ public class MessageActivity extends AppCompatActivity {
                             messageList.add(new Message(text, timeString, isMe));
                         }
                         adapter.notifyDataSetChanged();
-                        rvMessages.scrollToPosition(messageList.size() - 1);
+                        if (messageList.size() > 0) {
+                            rvMessages.scrollToPosition(messageList.size() - 1);
+                        }
                     }
                 });
     }

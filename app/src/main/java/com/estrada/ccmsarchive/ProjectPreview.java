@@ -15,7 +15,7 @@ public class ProjectPreview {
     private String course;
     private String techUsed;
     private String contributors;
-    private String documentId; // Para sa unique ID ng Firestore document
+    private String documentId;
 
     // Full Constructor
     public ProjectPreview(String title, String description, String uploader, String program, String year,
