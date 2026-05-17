@@ -18,6 +18,7 @@ import java.util.Map;
 public class EditProfile extends AppCompatActivity {
 
     private EditText nameField, studentIdField, emailAddField;
+    private TextView studentIdLabel; // Added reference for the label
     private Button saveBtn;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -37,6 +38,7 @@ public class EditProfile extends AppCompatActivity {
         nameField.setEnabled(false);
         studentIdField = findViewById(R.id.studentIdField);
         studentIdField.setEnabled(false);
+        studentIdLabel = findViewById(R.id.studentIdLabel); // Initialize label
         emailAddField = findViewById(R.id.emailAddField);
         saveBtn = findViewById(R.id.saveBtn);
 
@@ -64,13 +66,23 @@ public class EditProfile extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             String fName = documentSnapshot.getString("firstName");
                             String lName = documentSnapshot.getString("lastName");
-                            String sID = documentSnapshot.getString("studentID");
                             String email = documentSnapshot.getString("email");
+                            String role = documentSnapshot.getString("role");
+
+                            String idValue = "";
+                            // Condition to check role and set labels/IDs
+                            if ("Instructor".equalsIgnoreCase(role)) {
+                                if (studentIdLabel != null) studentIdLabel.setText("Instructor/Professor ID");
+                                idValue = documentSnapshot.getString("idNumber");
+                            } else {
+                                if (studentIdLabel != null) studentIdLabel.setText("Student ID");
+                                idValue = documentSnapshot.getString("studentID");
+                            }
 
                             // Fill the fields
                             if (nameField != null) nameField.setText(fName + " " + lName);
-                            if (studentIdField != null) studentIdField.setText(sID);
-                            if (emailAddField != null) emailAddField.setText(email);
+                            if (studentIdField != null) studentIdField.setText(idValue != null ? idValue : "");
+                            if (emailAddField != null) emailAddField.setText(email != null ? email : "");
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -80,19 +92,17 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void updateUserProfile() {
-        String fullName = nameField.getText().toString().trim();
         String updatedEmail = emailAddField.getText().toString().trim();
 
-        String[] nameParts = fullName.split(" ", 2);
-        String fName = nameParts.length > 0 ? nameParts[0] : "";
-        String lName = nameParts.length > 1 ? nameParts[1] : "";
+        if (updatedEmail.isEmpty()) {
+            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (mAuth.getCurrentUser() != null) {
             String userId = mAuth.getCurrentUser().getUid();
 
             Map<String, Object> updates = new HashMap<>();
-            updates.put("firstName", fName);
-            updates.put("lastName", lName);
             updates.put("email", updatedEmail);
 
             db.collection("users").document(userId).update(updates)

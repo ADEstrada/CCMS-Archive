@@ -14,8 +14,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
@@ -41,6 +43,15 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
         holder.tvStudent.setText("Submitted by: " + project.getUploader());
         holder.tvDescription.setText(project.getDescription());
 
+        // Format and set the date
+        if (project.getTimestamp() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+            String dateStr = sdf.format(project.getTimestamp().toDate());
+            holder.tvDate.setText("Date: " + dateStr);
+        } else {
+            holder.tvDate.setText("Date: Unknown");
+        }
+
         holder.btnApprove.setOnClickListener(v -> {
             if (project.getDocumentId() != null) {
                 updateStatus(project.getDocumentId(), "Approved", holder.itemView);
@@ -60,13 +71,14 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
     }
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvStudent, tvDescription;
+        TextView tvTitle, tvStudent, tvDescription, tvDate;
         Button btnApprove, btnReject;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.req_project_title);
             tvStudent = itemView.findViewById(R.id.req_student_name);
+            tvDate = itemView.findViewById(R.id.req_date);
             tvDescription = itemView.findViewById(R.id.req_description);
             btnApprove = itemView.findViewById(R.id.btn_approve);
             btnReject = itemView.findViewById(R.id.btn_reject);

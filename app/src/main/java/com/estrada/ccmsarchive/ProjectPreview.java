@@ -1,5 +1,6 @@
 package com.estrada.ccmsarchive;
 
+import com.google.firebase.Timestamp;
 import java.util.List;
 
 public class ProjectPreview {
@@ -16,6 +17,7 @@ public class ProjectPreview {
     private String techUsed;
     private String contributors;
     private String documentId;
+    private Timestamp timestamp;
 
     public ProjectPreview(String title, String description, String uploader, String program, String year,
                           List<String> imageData, String status, String course,
@@ -32,6 +34,13 @@ public class ProjectPreview {
         this.contributors = contributors;
     }
 
+    public ProjectPreview(String title, String description, String uploader, String program, String year,
+                          List<String> imageData, String status, String course,
+                          String techUsed, String contributors, Timestamp timestamp) {
+        this(title, description, uploader, program, year, imageData, status, course, techUsed, contributors);
+        this.timestamp = timestamp;
+    }
+
     // Getters
     public String getProjectName() { return projectName; }
     public String getDescription() { return description; }
@@ -43,6 +52,7 @@ public class ProjectPreview {
     public String getCourse() { return course; }
     public String getTechUsed() { return techUsed; }
     public String getContributors() { return contributors; }
+    public Timestamp getTimestamp() { return timestamp; }
 
     public String getDocumentId() { return documentId; }
     public void setDocumentId(String documentId) { this.documentId = documentId; }

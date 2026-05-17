@@ -70,7 +70,6 @@ public class RequestFragment extends Fragment {
 
                     projectList.clear();
                     for (QueryDocumentSnapshot doc : value) {
-
                         String docId = doc.getId();
                         String title = doc.getString("title");
                         String desc = doc.getString("description");
@@ -82,13 +81,14 @@ public class RequestFragment extends Fragment {
                         String contrib = doc.getString("contributors");
                         List<String> images = (List<String>) doc.get("imageData");
 
+                        com.google.firebase.Timestamp timestamp = doc.getTimestamp("timestamp");
+
                         ProjectPreview project = new ProjectPreview(
                                 title, desc, uploader, prog, yr, images,
-                                "Pending", course, tech, contrib
+                                "Pending", course, tech, contrib, timestamp
                         );
 
                         project.setDocumentId(docId);
-
                         projectList.add(project);
                     }
                     adapter.notifyDataSetChanged();

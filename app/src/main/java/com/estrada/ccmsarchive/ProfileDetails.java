@@ -184,7 +184,7 @@ public class ProfileDetails extends AppCompatActivity {
                                         .addOnSuccessListener(masterDoc -> {
                                             if (masterDoc.exists()) {
                                                 String prog = masterDoc.getString("program");
-                                                String yr = masterDoc.getString("year");
+                                                String yr = masterDoc.getString("yearLevel");
 
                                                 if (tvProgramYear != null) {
                                                     tvProgramYear.setText(prog + " | " + yr);
