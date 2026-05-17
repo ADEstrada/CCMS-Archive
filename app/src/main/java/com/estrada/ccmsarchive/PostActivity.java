@@ -44,11 +44,13 @@ public class PostActivity extends AppCompatActivity {
     private static final int MAX_IMAGES = 5;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private EditText project_title_field, desc_field, year_field;
-    private AutoCompleteTextView course_field, prof_instructor_field;
+    private EditText project_title_field, desc_field;
+    private AutoCompleteTextView course_field, prof_instructor_field, year_field;
     private MultiAutoCompleteTextView tech_used_field, contributors_field;
     private Button btnPost;
 
+    private List<String> yearSuggestion = new ArrayList<>();
+    private ArrayAdapter<String> yearAdapter;
     private List<String> courseSuggestions = new ArrayList<>();
     private ArrayAdapter<String> courseAdapter;
     private List<String> techSuggestions = new ArrayList<>();
@@ -83,6 +85,12 @@ public class PostActivity extends AppCompatActivity {
         prof_instructor_field = findViewById(R.id.prof_instructor_field);
         course_field = findViewById(R.id.course_field);
         tech_used_field = findViewById(R.id.tech_used_field);
+
+        // YEAR
+        yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, yearSuggestion);
+        year_field.setAdapter(yearAdapter);
+        year_field.setThreshold(1);
+        fetchYearData();
 
         // CONTRIBUTORS
         userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, userSuggestions);
@@ -213,19 +221,21 @@ public class PostActivity extends AppCompatActivity {
             return;
         }
 
-        int inputYear = Integer.parseInt(yearStr);
-        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        //comment ko muna itong inputyear and current year, may itatry lang ako
+        // int inputYear = Integer.parseInt(yearStr);
+        // int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
 
-        if (inputYear > currentYear) {
-            year_field.setError("Year cannot be in the future");
-            Toast.makeText(this, "Please enter a valid year (up to " + currentYear + ")", Toast.LENGTH_SHORT).show();
+        if (!yearStr.matches("\\d{4}-\\d{4}")) {
+            year_field.setError("Year format should be: 0000-0000");
+            Toast.makeText(this, "Please enter a valid academic year (ex. 2025-2026)", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (inputYear < 2015) {
+        /* if (inputYear < 2015) {
             year_field.setError("Year is too old");
             return;
-        }
+        } */
+
 
         btnPost.setEnabled(false);
         Toast.makeText(this, "Saving project... Please wait.", Toast.LENGTH_SHORT).show();
@@ -295,6 +305,18 @@ public class PostActivity extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to load courses", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void fetchYearData() {
+        db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                yearSuggestion.clear();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                    yearSuggestion.add(doc.getId());
+                }
+                yearAdapter.notifyDataSetChanged();
+            }
         });
     }
 
@@ -411,7 +433,7 @@ public class PostActivity extends AppCompatActivity {
                         project.put("imageData", imageUrls);
                         project.put("timestamp", FieldValue.serverTimestamp());
 
-                        // I-save muna ang project sa Pending_Projects
+
                         db.collection("Pending_Projects").add(project)
                                 .addOnSuccessListener(doc -> {
                                     String generatedProjectId = doc.getId();
@@ -440,7 +462,7 @@ public class PostActivity extends AppCompatActivity {
                                                                 finish();
                                                             });
                                                 } else {
-                                                    // WALANG ACCOUNT: Gamitin ang original Email logic mo
+                                                    // WALANG ACCOUNT: Gamitin ang original Email
                                                     db.collection("Instructors").document(selectedProfName).get()
                                                             .addOnSuccessListener(profDoc -> {
                                                                 if (profDoc.exists()) {

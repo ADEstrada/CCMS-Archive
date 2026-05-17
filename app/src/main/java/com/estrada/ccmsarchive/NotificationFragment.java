@@ -86,12 +86,11 @@ public class NotificationFragment extends Fragment {
 
     private void fetchNotifications() {
         if (mAuth.getCurrentUser() == null) return;
+        String currentUserId = mAuth.getCurrentUser().getUid();
 
-        String userID = mAuth.getCurrentUser().getUid();
-
+        // 1. Remove .orderBy() to avoid the index requirement
         db.collection("Notifications")
-                .whereEqualTo("userID", userID)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .whereEqualTo("userID", currentUserId)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -107,6 +106,13 @@ public class NotificationFragment extends Fragment {
                                 notificationList.add(notification);
                             }
                         }
+
+                        // 2. Sort manually in Java (Newest First)
+                        java.util.Collections.sort(notificationList, (n1, n2) -> {
+                            if (n1.getTimestamp() == null || n2.getTimestamp() == null) return 0;
+                            return n2.getTimestamp().compareTo(n1.getTimestamp());
+                        });
+
                         adapter.notifyDataSetChanged();
                     }
                 });

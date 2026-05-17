@@ -324,9 +324,9 @@ public class ProjectPostsActivity extends AppCompatActivity {
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Removed from Bookmarks", Toast.LENGTH_SHORT).show();
                         })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Error removing bookmark", Toast.LENGTH_SHORT).show());
+                        .addOnFailureListener(e -> Toast.makeText(this, "Error removing bookmark", Toast.LENGTH_SHORT).show());
 
-        } else {
+            } else {
                 Map<String, Object> data = new java.util.HashMap<>();
                 data.put("bookmarks", FieldValue.arrayUnion(projectId));
 
