@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import androidx.cardview.widget.CardView;
 
+// FOR THE ABOUT CCMS PAGE
 public class AboutCCMS extends AppCompatActivity {
 
     @Override
@@ -43,10 +44,11 @@ public class AboutCCMS extends AppCompatActivity {
         TextView tvDevContent = findViewById(R.id.tvContentDeveloper);
         if (tvDevContent != null) {
             tvDevContent.setText(Html.fromHtml(getString(R.string.developer_desc), Html.FROM_HTML_MODE_LEGACY));
-            // Make links clickable
+            // THIS MAKES THE LINKS CLICKABLE
             tvDevContent.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
+        // SHOWS THE CURRENT BUILD OF THE APP
         TextView tvAppVerContent = findViewById(R.id.tvContentAppVer);
         if (tvAppVerContent != null) {
             try {
@@ -84,6 +86,7 @@ public class AboutCCMS extends AppCompatActivity {
         );
     }
 
+    // MAKES THE CARDS EXPAND TO SHOW THE FULL CONTENT
     private void setupExpandableCard(CardView card, final TextView content, final ImageView arrow) {
         if (card == null || content == null || arrow == null) return;
 

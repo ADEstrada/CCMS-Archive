@@ -30,11 +30,9 @@ public class EditProfile extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize Header
         TextView headerTitle = findViewById(R.id.header_title);
         ImageView btnBack = findViewById(R.id.btn_back);
 
-        // Initialize Input Fields and Button
         nameField = findViewById(R.id.nameField);
         nameField.setEnabled(false);
         studentIdField = findViewById(R.id.studentIdField);
@@ -50,10 +48,8 @@ public class EditProfile extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
         }
 
-        // 1. Fetch current data to fill the text fields
         loadUserData();
 
-        // 2. Set up Save Button to update Firestore
         saveBtn.setOnClickListener(v -> {
             updateUserProfile();
         });
@@ -87,7 +83,6 @@ public class EditProfile extends AppCompatActivity {
         String fullName = nameField.getText().toString().trim();
         String updatedEmail = emailAddField.getText().toString().trim();
 
-        // Hiwalayin natin ang First Name at Last Name mula sa input
         String[] nameParts = fullName.split(" ", 2);
         String fName = nameParts.length > 0 ? nameParts[0] : "";
         String lName = nameParts.length > 1 ? nameParts[1] : "";
@@ -103,7 +98,7 @@ public class EditProfile extends AppCompatActivity {
             db.collection("users").document(userId).update(updates)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-                        finish(); // Babalik sa Profile screen pagkatapos i-save
+                        finish();
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();

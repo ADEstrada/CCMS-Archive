@@ -63,95 +63,95 @@ public class HomeFragment extends Fragment {
         adapter = new ProjectAdapter(list, R.layout.item_post);
         rvHome.setAdapter(adapter);
 
-        db.collection("Projects")
-                .whereEqualTo("status", "Approved")
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        return;
-                    }
-
-                    if (value != null) {
-                        fullList.clear();
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-
-                            String title = doc.getString("title");
-                            String desc = doc.getString("description");
-                            String uploader = doc.getString("uploader");
-                            String program = doc.getString("program");
-                            String year = doc.getString("year");
-
-                            List<String> images = (List<String>) doc.get("imageData");
-
-                            String status = doc.getString("status");
-                            String course = doc.getString("course");
-                            String tech = doc.getString("technologies");
-                            String contributors = doc.getString("contributors");
-
-                            fullList.add(new ProjectPreview(
-                                    title,
-                                    desc,
-                                    uploader,
-                                    program,
-                                    year,
-                                    images,
-                                    status != null ? status : "Approved",
-                                    course != null ? course : "",
-                                    tech != null ? tech : "",
-                                    contributors != null ? contributors : ""
-                            ));
+            db.collection("Projects")
+                    .whereEqualTo("status", "Approved")
+                    .addSnapshotListener((value, error) -> {
+                        if (error != null) {
+                            return;
                         }
-                        applyFilters();
+
+                        if (value != null) {
+                            fullList.clear();
+                            for (DocumentSnapshot doc : value.getDocuments()) {
+
+                                String title = doc.getString("title");
+                                String desc = doc.getString("description");
+                                String uploader = doc.getString("uploader");
+                                String program = doc.getString("program");
+                                String year = doc.getString("year");
+
+                                List<String> images = (List<String>) doc.get("imageData");
+
+                                String status = doc.getString("status");
+                                String course = doc.getString("course");
+                                String tech = doc.getString("technologies");
+                                String contributors = doc.getString("contributors");
+
+                                fullList.add(new ProjectPreview(
+                                        title,
+                                        desc,
+                                        uploader,
+                                        program,
+                                        year,
+                                        images,
+                                        status != null ? status : "Approved",
+                                        course != null ? course : "",
+                                        tech != null ? tech : "",
+                                        contributors != null ? contributors : ""
+                                ));
+                            }
+                            applyFilters();
 
 
-                        adapter.notifyDataSetChanged();
-                    }
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+
+            btnYear = view.findViewById(R.id.btnYearFilter);
+            btnYear.setOnClickListener(v -> {
+                String[] yearOptions = masterYearList.toArray(new String[0]);
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Year", yearOptions, selection -> {
+                    btnYear.setText(selection + " ▼");
+                    currentYear = selection;
+                    applyFilters();
                 });
-
-        btnYear = view.findViewById(R.id.btnYearFilter);
-        btnYear.setOnClickListener(v -> {
-            String[] yearOptions = masterYearList.toArray(new String[0]);
-            FilterBottomSheet sheet = new FilterBottomSheet("Select Year", yearOptions, selection -> {
-                btnYear.setText(selection + " ▼");
-                currentYear = selection;
-                applyFilters();
+                sheet.show(getActivity().getSupportFragmentManager(), "yearFilter");
             });
-            sheet.show(getActivity().getSupportFragmentManager(), "yearFilter");
-        });
 
-        btnCourse = view.findViewById(R.id.btnCourseFilter);
-        btnCourse.setOnClickListener(v -> {
-            String[] courseOptions = masterCourseList.toArray(new String[0]);
-            FilterBottomSheet sheet = new FilterBottomSheet("Select Course", courseOptions, selection -> {
-                btnCourse.setText(selection + " ▼");
-                currentCourse = selection;
-                applyFilters();
+            btnCourse = view.findViewById(R.id.btnCourseFilter);
+            btnCourse.setOnClickListener(v -> {
+                String[] courseOptions = masterCourseList.toArray(new String[0]);
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Course", courseOptions, selection -> {
+                    btnCourse.setText(selection + " ▼");
+                    currentCourse = selection;
+                    applyFilters();
+                });
+                sheet.show(getActivity().getSupportFragmentManager(), "courseFilter");
             });
-            sheet.show(getActivity().getSupportFragmentManager(), "courseFilter");
-        });
 
-        btnProgram = view.findViewById(R.id.btnProgramFilter);
+            btnProgram = view.findViewById(R.id.btnProgramFilter);
 
-        btnProgram.setOnClickListener(v -> {
-            String[] programOptions = masterProgramList.toArray(new String[0]);
-            FilterBottomSheet sheet = new FilterBottomSheet("Select Program", programOptions, selection -> {
-                btnProgram.setText(selection + " ▼");
-                currentProgram = selection;
-                applyFilters();
+            btnProgram.setOnClickListener(v -> {
+                String[] programOptions = masterProgramList.toArray(new String[0]);
+                FilterBottomSheet sheet = new FilterBottomSheet("Select Program", programOptions, selection -> {
+                    btnProgram.setText(selection + " ▼");
+                    currentProgram = selection;
+                    applyFilters();
+                });
+                sheet.show(getActivity().getSupportFragmentManager(), "programFilter");
             });
-            sheet.show(getActivity().getSupportFragmentManager(), "programFilter");
-        });
 
-        return view;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).setUIVisibility(true);
+            return view;
         }
-    }
+
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).setUIVisibility(true);
+            }
+        }
 
     private void applyFilters() {
         filteredList.clear();
@@ -193,22 +193,22 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        db.collection("Programs").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            masterProgramList.clear();
-            masterProgramList.add("All");
-            for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                masterProgramList.add(doc.getId());
-            }
-        });
+            db.collection("Programs").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                masterProgramList.clear();
+                masterProgramList.add("All");
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    masterProgramList.add(doc.getId());
+                }
+            });
 
-        db.collection("Courses").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            masterCourseList.clear();
-            masterCourseList.add("All");
-            for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                masterCourseList.add(doc.getId());
-            }
-        });
-    }
+            db.collection("Courses").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                masterCourseList.clear();
+                masterCourseList.add("All");
+                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                    masterCourseList.add(doc.getId());
+                }
+            });
+        }
 
     public void performSearch(String searchQuery) {
         this.currentSearchQuery = searchQuery;

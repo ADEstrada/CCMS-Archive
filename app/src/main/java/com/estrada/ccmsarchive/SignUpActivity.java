@@ -32,7 +32,6 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize Views
         EditText firstName = findViewById(R.id.first_name_field);
         EditText lastName = findViewById(R.id.last_name_field);
         EditText studentId = findViewById(R.id.studentID_field);
@@ -51,10 +50,9 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        // 2. Have an Account Button
+
         hacBtn.setOnClickListener(v -> finish());
 
-        // 3. Sign Up Button Logic
         signUpBtn.setOnClickListener(v -> {
             String fName = firstName.getText().toString().trim();
             String lName = lastName.getText().toString().trim();

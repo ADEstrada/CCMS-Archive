@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,14 +24,12 @@ import java.util.List;
 
 public class BookmarkFragment extends Fragment {
 
-    public BookmarkFragment() {
-    }
+    public BookmarkFragment() {}
 
     private RecyclerView rvBookmarks;
     private ProjectAdapter adapter;
     private ImageView btnBack;
     private TextView headerTitle;
-
     private List<ProjectPreview> projectList = new ArrayList<>();
 
     @Override
@@ -51,7 +50,14 @@ public class BookmarkFragment extends Fragment {
             btnBack.setOnClickListener(v -> {
                 if (getActivity() instanceof MainActivity) {
                     MainActivity main = (MainActivity) getActivity();
-                    main.findViewById(R.id.nav_home).performClick();
+                    // For student view
+                    BottomNavigationView nav = main.findViewById(R.id.bottomNavigationView);
+                    if (nav != null) nav.setSelectedItemId(R.id.nav_home);
+                } else if (getActivity() instanceof InstructorMainActivity) {
+                    InstructorMainActivity instructorMain = (InstructorMainActivity) getActivity();
+                    // For instructor view
+                    BottomNavigationView nav = instructorMain.findViewById(R.id.bottomNavigationView);
+                    if (nav != null) nav.setSelectedItemId(R.id.nav_home);
                 }
             });
         }

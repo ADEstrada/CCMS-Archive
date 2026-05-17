@@ -100,7 +100,5 @@ public class ChatList extends AppCompatActivity {
                         }
                     }
                 });
-
-        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
     }
 }

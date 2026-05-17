@@ -1,5 +1,4 @@
 package com.estrada.ccmsarchive;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         this.deleteListener = listener;
     }
     private List<PostPreview> postList;
-
     private int layout_id;
 
     public PostAdapter(List<PostPreview> postList, int layout_id) {
@@ -56,12 +54,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             });
         }
+        PostPreview post = postList.get(position);
+        holder.tvProjectName.setText(post.getProjectName());
+        holder.tvStatus.setText(post.getStatus());
     }
 
     @Override
-    public int getItemCount() {
-        return postList.size();
-    }
+    public int getItemCount() { return postList.size(); }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView tvProjectName, tvStatus;
