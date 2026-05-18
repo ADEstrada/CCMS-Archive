@@ -52,11 +52,15 @@ public class JsonHelper {
         return studentList;
     }
 
+
+
     public static List<Instructor> getInstructorMasterList(Context context) {
+        // Siguraduhing "instructors_data.json" ang filename sa assets
         String json = getJsonFromAssets(context, "instructors_data.json");
         if (json == null) return new ArrayList<>();
 
         Gson gson = new Gson();
+        // Map ang ginagamit dahil ang Keys ay names (e.g., "Ann Dominique Estrada")
         Type type = new TypeToken<Map<String, Instructor>>(){}.getType();
         Map<String, Instructor> instructorMap = gson.fromJson(json, type);
 
@@ -64,7 +68,19 @@ public class JsonHelper {
         if (instructorMap != null) {
             for (Map.Entry<String, Instructor> entry : instructorMap.entrySet()) {
                 Instructor i = entry.getValue();
-                i.setName(entry.getKey()); // Ang Key (Pangalan) ay isasave natin bilang name
+
+                // Ang Key ay Full Name. Hatiin natin ito para sa firstName at lastName
+                String fullName = entry.getKey();
+                String[] nameParts = fullName.split(" ");
+
+                if (nameParts.length >= 2) {
+                    i.setFirstName(nameParts[0]); // Unang salita
+                    i.setLastName(nameParts[nameParts.length - 1]); // Huling salita
+                } else {
+                    i.setFirstName(fullName);
+                    i.setLastName("");
+                }
+
                 instructorList.add(i);
             }
         }

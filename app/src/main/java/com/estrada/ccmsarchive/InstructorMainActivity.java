@@ -26,7 +26,6 @@ public class InstructorMainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private TextView profileInitials;
     private TextView sidebarInitials;
-    private TextView btnProfileDetails;
     private TextView btnEditProfile;
     private TextView btnChangePassword;
     private TextView btnAboutCCMS;
@@ -50,7 +49,6 @@ public class InstructorMainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavigationView);
 
         // SIDE BAR
-        btnProfileDetails = findViewById(R.id.sidebar_initials);
         btnEditProfile = findViewById(R.id.menu_edit_profile);
         btnChangePassword = findViewById(R.id.menu_change_password);
         btnAboutCCMS = findViewById(R.id.menu_about);
@@ -69,19 +67,21 @@ public class InstructorMainActivity extends AppCompatActivity {
         String firstName = getIntent().getStringExtra("FIRST_NAME");
         String lastName = getIntent().getStringExtra("LAST_NAME");
 
-        if (firstName != null && lastName != null && !firstName.isEmpty() && !lastName.isEmpty()) {
+        if (firstName != null && !firstName.isEmpty()) {
             String initial1 = firstName.substring(0, 1).toUpperCase();
-            String initial2 = lastName.substring(0, 1).toUpperCase();
+            String initial2 = (lastName != null && !lastName.isEmpty()) ? lastName.substring(0, 1).toUpperCase() : "";
+
             profileInitials.setText(initial1 + initial2);
             sidebarInitials.setText(initial1 + initial2);
 
             if (sidebarFullName != null) {
-                sidebarFullName.setText(firstName + " " + lastName);
+                sidebarFullName.setText(firstName + (lastName != null ? " " + lastName : ""));
             }
         } else {
-            profileInitials.setText("AE");
-            if (sidebarFullName != null) sidebarFullName.setText("Guest User");
+            profileInitials.setText("I");
+            if (sidebarFullName != null) sidebarFullName.setText("Instructor");
         }
+
 
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
@@ -131,13 +131,6 @@ public class InstructorMainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
-        });
-
-        // PROFILE DETAILS IN SIDEBAR
-        btnProfileDetails.setOnClickListener(v -> {
-            Intent intent = new Intent(InstructorMainActivity.this, ProfileDetails.class);
-            startActivity(intent);
-            drawerLayout.closeDrawers();
         });
 
         // EDIT PROFILE IN SIDEBAR

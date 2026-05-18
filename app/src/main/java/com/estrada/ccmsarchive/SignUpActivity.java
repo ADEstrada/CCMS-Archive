@@ -62,70 +62,92 @@ public class SignUpActivity extends AppCompatActivity {
 
             int selectedRole = roleGroup.getCheckedRadioButtonId();
             String role = (selectedRole == R.id.radioInstructor) ? "Instructor" : "Student";
-            String masterlistPath = (role.equals("Instructor")) ? "instructor_masterlist" : "student_masterlist";
 
             if (validateFields(firstName, fName, lastName, lName, studentId, studID, email, emailInput, password, passwordInput, role)) {
 
-                db.collection(masterlistPath).document(studID).get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful() && task.getResult().exists()) {
+                if (role.equals("Instructor")) {
+                    // VALIDATION PARA SA INSTRUCTOR: Gamitin ang Full Name bilang Document ID
+                    String fullName = fName + " " + lName;
 
-                                String officialFirstName = task.getResult().getString("firstName");
-                                String officialLastName = task.getResult().getString("lastName");
+                    db.collection("Instructors").document(fullName).get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && task.getResult().exists()) {
+                                    String officialEmail = task.getResult().getString("email");
 
-                                String finalProgram;
-                                String finalYear;
-
-                                if (role.equals("Instructor")) {
-                                    finalProgram = "College of Computing and Multimedia Studies";
-                                    finalYear = task.getResult().getString("academicRank");
+                                    // I-check kung ang email ay tugma sa instructors_data.json
+                                    if (emailInput.equalsIgnoreCase(officialEmail)) {
+                                        // Proceed sa Auth at Pag-save
+                                        performRegistration(emailInput, passwordInput, fName, lName, studID, role, "CCMS", "Instructor");
+                                    } else {
+                                        email.setError("Email does not match our instructor records.");
+                                    }
                                 } else {
-                                    finalProgram = task.getResult().getString("program");
-                                    finalYear = task.getResult().getString("year");
+                                    firstName.setError("Instructor name not authorized.");
                                 }
+                            });
+                } else {
+                    // VALIDATION PARA SA STUDENT: Nanatili sa student_masterlist gamit ang ID
+                    db.collection("student_masterlist").document(studID).get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && task.getResult().exists()) {
+                                    String offFName = task.getResult().getString("firstName");
+                                    String offLName = task.getResult().getString("lastName");
+                                    String prog = task.getResult().getString("program");
+                                    String yr = task.getResult().getString("yearLevel"); // Match sa database
 
-                                if (fName.equalsIgnoreCase(officialFirstName) && lName.equalsIgnoreCase(officialLastName)) {
-                                    mAuth.createUserWithEmailAndPassword(emailInput, passwordInput)
-                                            .addOnCompleteListener(authTask -> {
-                                                if (authTask.isSuccessful()) {
-                                                    String userId = mAuth.getCurrentUser().getUid();
-
-                                                    Map<String, Object> user = new HashMap<>();
-                                                    user.put("firstName", officialFirstName);
-                                                    user.put("lastName", officialLastName);
-                                                    user.put("idNumber", studID);
-                                                    user.put("email", emailInput);
-                                                    user.put("program", finalProgram);
-                                                    user.put("year", finalYear);
-                                                    user.put("role", role);
-
-                                                    db.collection("users").document(userId).set(user)
-                                                            .addOnSuccessListener(aVoid -> {
-                                                                Intent intent;
-                                                                if (role.equals("Instructor")) {
-                                                                    intent = new Intent(SignUpActivity.this, InstructorMainActivity.class);
-                                                                } else {
-                                                                    intent = new Intent(SignUpActivity.this, MainActivity.class);
-                                                                }
-                                                                intent.putExtra("FIRST_NAME", officialFirstName);
-                                                                intent.putExtra("ROLE", role);
-                                                                startActivity(intent);
-                                                                finish();
-                                                            });
-                                                } else {
-                                                    Toast.makeText(this, "Auth Error: " + authTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                                    if (fName.equalsIgnoreCase(offFName) && lName.equalsIgnoreCase(offLName)) {
+                                        performRegistration(emailInput, passwordInput, offFName, offLName, studID, role, prog, yr);
+                                    } else {
+                                        Toast.makeText(this, "Name mismatch for Student", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
-                                    Toast.makeText(this, "Name mismatch for " + role, Toast.LENGTH_LONG).show();
+                                    studentId.setError("Student ID not found in masterlist");
                                 }
-                            } else {
-                                studentId.setError(role + " ID not found in masterlist");
-                            }
-                        });
+                            });
+                }
             }
         });
     }
+
+    private void performRegistration(String email, String password, String fName, String lName, String id, String role, String prog, String yr) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(authTask -> {
+                    if (authTask.isSuccessful()) {
+                        String userId = mAuth.getCurrentUser().getUid();
+
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("firstName", fName);
+                        user.put("lastName", lName);
+                        user.put("idNumber", id); // In-input na ID ni Instructor
+                        user.put("email", email);
+                        user.put("program", prog);
+                        user.put("year", yr);
+                        user.put("role", role);
+
+                        // 1. I-save sa 'users' collection para sa login
+                        db.collection("users").document(userId).set(user)
+                                .addOnSuccessListener(aVoid -> {
+
+                                    if (role.equals("Instructor")) {
+                                        db.collection("instructor_masterlist").document(id).set(user);
+                                    }
+
+                                    Intent intent = new Intent(SignUpActivity.this,
+                                            role.equals("Instructor") ? InstructorMainActivity.class : MainActivity.class);
+
+                                    intent.putExtra("FIRST_NAME", fName);
+                                    intent.putExtra("LAST_NAME", lName);
+                                    intent.putExtra("ROLE", role);
+
+                                    startActivity(intent);
+                                    finish();
+                                });
+                    } else {
+                        Toast.makeText(this, "Auth Error: " + authTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     private boolean validateFields(EditText fnView, String fn, EditText lnView, String ln, EditText stIdView, String stID, EditText emView, String em, EditText pwView, String pw, String role) {
         boolean isValid = true;

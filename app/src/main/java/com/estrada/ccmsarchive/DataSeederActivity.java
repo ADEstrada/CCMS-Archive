@@ -33,46 +33,67 @@ public class DataSeederActivity extends AppCompatActivity {
         btnUploadCourses.setOnClickListener(v -> seedCourseData());
     }
 
-    // FOR STUDENTS
     private void seedStudentData() {
+        // ITO ANG NAWAWALA: Kunin ang listahan mula sa JsonHelper
         List<Student> students = JsonHelper.getStudentList(this);
 
         if (students != null && !students.isEmpty()) {
             for (Student s : students) {
                 Map<String, Object> data = new HashMap<>();
+
+                // I-save ang hiwalay na fields para sa validation sa SignUpActivity
+                data.put("firstName", s.getFirstName());
+                data.put("lastName", s.getLastName());
+
+                // I-save ang fields para sa display (base sa image_8a9bb2.png)
                 data.put("name", s.getFullName());
                 data.put("program", s.getProgram());
-                data.put("yearLevel", s.getYear());
+                data.put("yearLevel", s.getYear()); // "yearLevel" dapat para tumugma sa SignUp fetch
 
                 db.collection("student_masterlist")
                         .document(s.getStudentId())
-                        .set(data);
+                        .set(data)
+                        .addOnSuccessListener(aVoid -> Log.d("SEEDER", "Uploaded: " + s.getStudentId()))
+                        .addOnFailureListener(e -> Log.e("SEEDER", "Error: " + e.getMessage()));
             }
             statusText.setText("Status: Student Masterlist Seeded!");
             Toast.makeText(this, "Students uploaded!", Toast.LENGTH_SHORT).show();
         } else {
-            statusText.setText("Status: No student data found.");
+            statusText.setText("Status: No student data found in JSON.");
         }
     }
 
-    // FOR INSTRUCTORS
+    // Fix Instructor seeder to match SignUpActivity requirements
     private void seedInstructorData() {
         List<Instructor> instructors = JsonHelper.getInstructorMasterList(this);
 
         if (instructors != null && !instructors.isEmpty()) {
+            int total = instructors.size();
+            final int[] count = {0}; // Counter para sa successful uploads
+
             for (Instructor i : instructors) {
                 Map<String, Object> data = new HashMap<>();
                 data.put("email", i.getEmail());
+                data.put("firstName", i.getFirstName());
+                data.put("lastName", i.getLastName());
+                data.put("academicRank", i.getRank());
 
-                db.collection("Instructors")
-                        .document(i.getName())
+                String fullName = i.getFirstName() + " " + i.getLastName();
+
+                db.collection("Instructors") // Nanatili sa "Instructors" collection
+                        .document(fullName)
                         .set(data)
-                        .addOnSuccessListener(aVoid -> Log.d("SEEDER", "Success: " + i.getName()));
+                        .addOnSuccessListener(aVoid -> {
+                            count[0]++;
+                            // I-check kung huling instructor na ito sa listahan
+                            if (count[0] == total) {
+                                Toast.makeText(this, "All " + total + " instructors uploaded successfully!", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.e("FIREBASE", "Failed: " + fullName));
             }
-            statusText.setText("Status: Instructors Seeded!");
-            Toast.makeText(this, "Instructor masterlist updated!", Toast.LENGTH_SHORT).show();
         } else {
-            statusText.setText("Status: Failed to read instructor JSON");
+            Toast.makeText(this, "No data found in JSON", Toast.LENGTH_SHORT).show();
         }
     }
 

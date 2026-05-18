@@ -168,36 +168,25 @@ public class ProfileDetails extends AppCompatActivity {
                     .addOnSuccessListener(userDoc -> {
                         if (userDoc.exists()) {
                             String fName = userDoc.getString("firstName");
-                            String lName = userDoc.getString("lastName");
-                            String studID = userDoc.getString("studentID");
+                            String lName = userDoc.getString("lastName");  
+
+                            String prog = userDoc.getString("program");
+                            String yr = userDoc.getString("year");
 
                             if (tvFullName != null) tvFullName.setText(fName + " " + lName);
 
-                            // Safer initials logic
                             if (tvInitials != null && fName != null && lName != null) {
                                 String initials = fName.substring(0, 1).toUpperCase() + lName.substring(0, 1).toUpperCase();
                                 tvInitials.setText(initials);
                             }
 
-                            if (studID != null) {
-                                db.collection("student_masterlist").document(studID).get()
-                                        .addOnSuccessListener(masterDoc -> {
-                                            if (masterDoc.exists()) {
-                                                String prog = masterDoc.getString("program");
-                                                String yr = masterDoc.getString("yearLevel");
-
-                                                if (tvProgramYear != null) {
-                                                    tvProgramYear.setText(prog + " | " + yr);
-                                                }
-                                            } else {
-                                                if (tvProgramYear != null) tvProgramYear.setText("ID not in Master List");
-                                            }
-                                        });
+                            // I-set ang UI
+                            if (tvProgramYear != null) {
+                                String displayProg = (prog != null) ? prog : "No Program";
+                                String displayYear = (yr != null) ? yr : "No Year";
+                                tvProgramYear.setText(displayProg + " | " + displayYear);
                             }
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
     }

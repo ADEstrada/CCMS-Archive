@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private CardView profileCard;
@@ -33,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView sidebarFullName;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
+    private com.google.firebase.auth.FirebaseAuth mAuth;
+    private com.google.firebase.firestore.FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,21 +71,44 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // NAME INITIALS
-        String firstName = getIntent().getStringExtra("FIRST_NAME");
-        String lastName = getIntent().getStringExtra("LAST_NAME");
+        mAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+        db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
 
-        if (firstName != null && lastName != null && !firstName.isEmpty() && !lastName.isEmpty()) {
-            String initial1 = firstName.substring(0, 1).toUpperCase();
-            String initial2 = lastName.substring(0, 1).toUpperCase();
-            profileInitials.setText(initial1 + initial2);
-            sidebarInitials.setText(initial1 + initial2);
+        if (mAuth.getCurrentUser() != null) {
+            String userId = mAuth.getCurrentUser().getUid();
 
-            if (sidebarFullName != null) {
-                sidebarFullName.setText(firstName + " " + lastName);
-            }
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Kunin ang fields base sa image_8b8c4e.png
+                            String firstName = documentSnapshot.getString("firstName");
+                            String lastName = documentSnapshot.getString("lastName");
+                            String year = documentSnapshot.getString("year");
+
+                            if (firstName != null && lastName != null) {
+                                // I-set ang Initials
+                                String initial1 = firstName.substring(0, 1).toUpperCase();
+                                String initial2 = lastName.substring(0, 1).toUpperCase();
+                                profileInitials.setText(initial1 + initial2);
+                                sidebarInitials.setText(initial1 + initial2);
+
+                                // I-set ang Full Name at Year
+                                if (sidebarFullName != null) {
+                                    sidebarFullName.setText(firstName + " " + lastName);
+                                }
+
+                                // Kung gusto mo ring ipakita ang year sa sidebar:
+                                // sidebarYear.setText(year);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        sidebarFullName.setText("Error loading data");
+                    });
         } else {
-            profileInitials.setText("AE");
-            if (sidebarFullName != null) sidebarFullName.setText("Guest User");
+            // Pag walang naka-login, balik sa LoginActivity
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
         }
 
         if (savedInstanceState == null) {
