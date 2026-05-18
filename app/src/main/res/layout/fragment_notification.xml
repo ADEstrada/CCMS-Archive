@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".BookmarkFragment">
+    tools:context=".NotificationFragment">
 
     <include layout="@layout/layout_back_header_main" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvBookmark"
+        android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"

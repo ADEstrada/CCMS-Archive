@@ -176,22 +176,22 @@ public class HomeFragment extends Fragment {
                     project.getYear().toLowerCase().contains(query) ||
                     project.getCourse().toLowerCase().contains(query);
 
-                    if (matchesSearch && matchesCourse && matchesProgram && matchesYear) {
-                        filteredList.add(project);
-                    }
+            if (matchesSearch && matchesCourse && matchesProgram && matchesYear) {
+                filteredList.add(project);
             }
-            adapter.updateList(filteredList);
+        }
+        adapter.updateList(filteredList);
     }
 
-        // METHOD FOR FILTER OF YEAR, COURSE, AND PROGRAM
-        private void fetchFilterOptions() {
-            db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
-                masterYearList.clear();
-                masterYearList.add("All");
-                for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                    masterYearList.add(doc.getId());
-                }
-            });
+    // METHOD FOR FILTER OF YEAR, COURSE, AND PROGRAM
+    private void fetchFilterOptions() {
+        db.collection("Year").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            masterYearList.clear();
+            masterYearList.add("All");
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                masterYearList.add(doc.getId());
+            }
+        });
 
             db.collection("Programs").get().addOnSuccessListener(queryDocumentSnapshots -> {
                 masterProgramList.clear();
@@ -216,5 +216,3 @@ public class HomeFragment extends Fragment {
     }
 
 }
-
-

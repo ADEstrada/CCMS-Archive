@@ -102,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_add) {
                Intent intent = new Intent(MainActivity.this, PostActivity.class);
                startActivity(intent);
+            } else if (id == R.id.nav_notification) {
+                selectedFragment = new NotificationFragment();
+                findViewById(R.id.headerview).setVisibility(View.GONE);
             }
 
             return loadFragment(selectedFragment);

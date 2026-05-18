@@ -165,4 +165,7 @@
 
     <string name="reject">Reject</string>
     <string name="approve">Approve</string>
+
+    <string name="txt_notif">Notifications</string>
+    <string name="txt_requests">Requests</string>
 </resources>
