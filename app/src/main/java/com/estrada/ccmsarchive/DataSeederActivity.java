@@ -34,21 +34,18 @@ public class DataSeederActivity extends AppCompatActivity {
     }
 
     private void seedStudentData() {
-        // ITO ANG NAWAWALA: Kunin ang listahan mula sa JsonHelper
         List<Student> students = JsonHelper.getStudentList(this);
 
         if (students != null && !students.isEmpty()) {
             for (Student s : students) {
                 Map<String, Object> data = new HashMap<>();
 
-                // I-save ang hiwalay na fields para sa validation sa SignUpActivity
                 data.put("firstName", s.getFirstName());
                 data.put("lastName", s.getLastName());
 
-                // I-save ang fields para sa display (base sa image_8a9bb2.png)
                 data.put("name", s.getFullName());
                 data.put("program", s.getProgram());
-                data.put("yearLevel", s.getYear()); // "yearLevel" dapat para tumugma sa SignUp fetch
+                data.put("yearLevel", s.getYear());
 
                 db.collection("student_masterlist")
                         .document(s.getStudentId())
@@ -63,13 +60,12 @@ public class DataSeederActivity extends AppCompatActivity {
         }
     }
 
-    // Fix Instructor seeder to match SignUpActivity requirements
     private void seedInstructorData() {
         List<Instructor> instructors = JsonHelper.getInstructorMasterList(this);
 
         if (instructors != null && !instructors.isEmpty()) {
             int total = instructors.size();
-            final int[] count = {0}; // Counter para sa successful uploads
+            final int[] count = {0}; 
 
             for (Instructor i : instructors) {
                 Map<String, Object> data = new HashMap<>();
@@ -80,12 +76,11 @@ public class DataSeederActivity extends AppCompatActivity {
 
                 String fullName = i.getFirstName() + " " + i.getLastName();
 
-                db.collection("Instructors") // Nanatili sa "Instructors" collection
+                db.collection("Instructors") 
                         .document(fullName)
                         .set(data)
                         .addOnSuccessListener(aVoid -> {
                             count[0]++;
-                            // I-check kung huling instructor na ito sa listahan
                             if (count[0] == total) {
                                 Toast.makeText(this, "All " + total + " instructors uploaded successfully!", Toast.LENGTH_LONG).show();
                             }
