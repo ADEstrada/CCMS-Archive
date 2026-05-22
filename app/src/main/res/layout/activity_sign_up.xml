@@ -63,7 +63,7 @@
                         android:paddingStart="12dp"
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
-                        android:textSize="16sp"
+                        android:textSize="12sp"
                         android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +91,7 @@
                         android:paddingStart="12dp"
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
-                        android:textSize="16sp"
+                        android:textSize="12sp"
                         android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -165,7 +165,7 @@
                         android:paddingStart="12dp"
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
-                        android:textSize="16sp"
+                        android:textSize="12sp"
                         android:digits="0123456789-"
                         android:inputType="number"
                         android:maxLength="7"
@@ -197,7 +197,7 @@
                         android:paddingStart="12dp"
                         android:textColor="@color/black"
                         android:textColorHint="#64050505"
-                        android:textSize="16sp"
+                        android:textSize="12sp"
                         android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -215,22 +215,37 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/email_field" />
 
-                    <EditText
-                        android:id="@+id/password_field"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/password_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:background="#FAF8F8"
-                        android:hint="@string/password_hint"
-                        android:inputType="textPassword"
-                        android:paddingStart="12dp"
-                        android:textColor="@color/black"
-                        android:textColorHint="#64050505"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins_medium"
+                        app:hintEnabled="false"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleDrawable="@drawable/password_toggle_selector"
+                        app:passwordToggleTint="#87231f"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/passwordLabel" />
+                        app:layout_constraintTop_toBottomOf="@+id/passwordLabel">
+
+                        <EditText
+                            android:id="@+id/password_field"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#FAF8F8"
+                            android:hint="@string/password_hint"
+                            android:inputType="textPassword"
+                            android:paddingStart="12dp"
+                            android:textColor="@color/black"
+                            android:textColorHint="#64050505"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/poppins_medium"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/passwordLabel" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
                         android:id="@+id/loginBtn"
@@ -245,7 +260,7 @@
                         android:fontFamily="@font/poppins_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/password_field" />
+                        app:layout_constraintTop_toBottomOf="@+id/password_layout" />
 
                     <TextView
                         android:id="@+id/orText"

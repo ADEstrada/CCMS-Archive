@@ -53,9 +53,15 @@ public class MessageActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        // Update this block in your onCreate method
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+
+            // Use the larger value between the navigation bar and the keyboard height
+            int bottomPadding = Math.max(systemBars.bottom, ime.bottom);
+
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, bottomPadding);
             return insets;
         });
 
@@ -90,6 +96,16 @@ public class MessageActivity extends AppCompatActivity {
         adapter = new MessageAdapter(messageList, initials);
         rvMessages.setLayoutManager(new LinearLayoutManager(this));
         rvMessages.setAdapter(adapter);
+
+        // Add this below rvMessages.setAdapter(adapter);
+        rvMessages.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            // If the bottom coordinate is smaller than before, it means the keyboard just popped up
+            if (bottom < oldBottom) {
+                if (messageList.size() > 0) {
+                    rvMessages.postDelayed(() -> rvMessages.scrollToPosition(messageList.size() - 1), 100);
+                }
+            }
+        });
 
         listenForMessages();
 

@@ -89,25 +89,26 @@
                         android:layout_marginTop="8dp"
                         app:hintEnabled="false"
                         app:passwordToggleEnabled="true"
+                        app:passwordToggleDrawable="@drawable/password_toggle_selector"
                         app:passwordToggleTint="#87231f"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/passwordLabel">
 
-                        <EditText
-                            android:id="@+id/password_field"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:background="#FAF8F8"
-                            android:fontFamily="sans-serif"
-                            android:hint="@string/password_hint"
-                            android:inputType="textPassword"
-                            android:paddingStart="12dp"
-                            android:textColor="@color/black"
-                            android:textColorHint="#64050505"
-                            android:textSize="14sp" />
+                    <EditText
+                        android:id="@+id/password_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="#FAF8F8"
+                        android:fontFamily="sans-serif"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:paddingStart="12dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="#64050505"
+                        android:textSize="14sp" />
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
                         android:id="@+id/loginBtn"

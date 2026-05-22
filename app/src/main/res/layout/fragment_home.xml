@@ -37,23 +37,8 @@
             android:padding="10dp">
 
             <TextView
-                android:id="@id/btnAll"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/filter_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingHorizontal="13dp"
-                android:text="All"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@id/btnYearFilter"
-                android:layout_width="wrap_content"
+                android:layout_width="83dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/filter_selector"
@@ -68,7 +53,7 @@
 
             <TextView
                 android:id="@id/btnCourseFilter"
-                android:layout_width="wrap_content"
+                android:layout_width="97dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/filter_selector"
@@ -83,7 +68,7 @@
 
             <TextView
                 android:id="@id/btnProgramFilter"
-                android:layout_width="wrap_content"
+                android:layout_width="107dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/filter_selector"

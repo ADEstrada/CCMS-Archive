@@ -80,25 +80,20 @@ public class MainActivity extends AppCompatActivity {
             db.collection("users").document(userId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // Kunin ang fields base sa image_8b8c4e.png
                             String firstName = documentSnapshot.getString("firstName");
                             String lastName = documentSnapshot.getString("lastName");
                             String year = documentSnapshot.getString("year");
 
                             if (firstName != null && lastName != null) {
-                                // I-set ang Initials
                                 String initial1 = firstName.substring(0, 1).toUpperCase();
                                 String initial2 = lastName.substring(0, 1).toUpperCase();
                                 profileInitials.setText(initial1 + initial2);
                                 sidebarInitials.setText(initial1 + initial2);
 
-                                // I-set ang Full Name at Year
                                 if (sidebarFullName != null) {
                                     sidebarFullName.setText(firstName + " " + lastName);
                                 }
 
-                                // Kung gusto mo ring ipakita ang year sa sidebar:
-                                // sidebarYear.setText(year);
                             }
                         }
                     })
