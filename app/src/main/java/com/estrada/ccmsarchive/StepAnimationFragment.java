@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable; // Piliin ang androidx.annotation
+import androidx.annotation.Nullable; // 
 import androidx.fragment.app.Fragment;
 
 public class StepAnimationFragment extends Fragment {
@@ -17,7 +17,7 @@ public class StepAnimationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_step_animation, container, false);
 
-        // Sequence of views to animate
+        // SEQUENCE OF VIEWS TO ANIMATR
         View[] sequence = {
                 view.findViewById(R.id.img_step1), view.findViewById(R.id.txt_step1), view.findViewById(R.id.line1),
                 view.findViewById(R.id.img_step2), view.findViewById(R.id.txt_step2), view.findViewById(R.id.line2),
@@ -31,7 +31,7 @@ public class StepAnimationFragment extends Fragment {
 
         for (int i = 0; i < sequence.length; i++) {
             final View targetView = sequence[i];
-            if (targetView == null) continue; // Safety check
+            if (targetView == null) continue; 
 
             handler.postDelayed(() -> {
                 targetView.setVisibility(View.VISIBLE);
@@ -42,7 +42,7 @@ public class StepAnimationFragment extends Fragment {
                         .start();
             }, delay);
 
-            delay += 500; // Time interval between each element
+            delay += 500; 
         }
 
         return view;
