@@ -180,7 +180,6 @@ public class ProfileDetails extends AppCompatActivity {
                                 tvInitials.setText(initials);
                             }
 
-                            // I-set ang UI
                             if (tvProgramYear != null) {
                                 String displayProg = (prog != null) ? prog : "No Program";
                                 String displayYear = (yr != null) ? yr : "No Year";
