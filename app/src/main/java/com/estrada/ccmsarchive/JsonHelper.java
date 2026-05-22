@@ -15,7 +15,6 @@ import java.util.Map;
 
 public class JsonHelper {
 
-    // Helper para basahin ang file mula sa assets folder
     private static String getJsonFromAssets(Context context, String fileName) {
         String jsonString;
         try {
@@ -37,7 +36,6 @@ public class JsonHelper {
         String json = getJsonFromAssets(context, "student_masterlist.json");
         if (json == null) return new ArrayList<>();
 
-        // I-parse bilang Map dahil ang keys ay yung IDs (e.g., "24-0384")
         Type type = new TypeToken<Map<String, Student>>(){}.getType();
         Map<String, Student> studentMap = new Gson().fromJson(json, type);
 
@@ -45,7 +43,7 @@ public class JsonHelper {
         if (studentMap != null) {
             for (Map.Entry<String, Student> entry : studentMap.entrySet()) {
                 Student s = entry.getValue();
-                s.setStudentId(entry.getKey()); // I-set yung ID mula sa key
+                s.setStudentId(entry.getKey()); 
                 studentList.add(s);
             }
         }
@@ -55,12 +53,10 @@ public class JsonHelper {
 
 
     public static List<Instructor> getInstructorMasterList(Context context) {
-        // Siguraduhing "instructors_data.json" ang filename sa assets
         String json = getJsonFromAssets(context, "instructors_data.json");
         if (json == null) return new ArrayList<>();
 
         Gson gson = new Gson();
-        // Map ang ginagamit dahil ang Keys ay names (e.g., "Ann Dominique Estrada")
         Type type = new TypeToken<Map<String, Instructor>>(){}.getType();
         Map<String, Instructor> instructorMap = gson.fromJson(json, type);
 
@@ -69,13 +65,12 @@ public class JsonHelper {
             for (Map.Entry<String, Instructor> entry : instructorMap.entrySet()) {
                 Instructor i = entry.getValue();
 
-                // Ang Key ay Full Name. Hatiin natin ito para sa firstName at lastName
                 String fullName = entry.getKey();
                 String[] nameParts = fullName.split(" ");
 
                 if (nameParts.length >= 2) {
-                    i.setFirstName(nameParts[0]); // Unang salita
-                    i.setLastName(nameParts[nameParts.length - 1]); // Huling salita
+                    i.setFirstName(nameParts[0]);
+                    i.setLastName(nameParts[nameParts.length - 1]); 
                 } else {
                     i.setFirstName(fullName);
                     i.setLastName("");
@@ -98,7 +93,7 @@ public class JsonHelper {
         if (courseMap != null) {
             for (Map.Entry<String, Course> entry : courseMap.entrySet()) {
                 Course c = entry.getValue();
-                c.setCourseCode(entry.getKey()); // Key ang magiging Course Code
+                c.setCourseCode(entry.getKey()); 
                 courseList.add(c);
             }
         }
