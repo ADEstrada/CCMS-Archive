@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // --- DINAGDAG: AUTO LOGIN LOGIC ---
+        // AUTO-LOGIN LOGIC
         if (mAuth.getCurrentUser() != null) {
             String userId = mAuth.getCurrentUser().getUid();
             db.collection("users").document(userId).get().addOnSuccessListener(doc -> {
@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
                     navigateToDashboard(doc.getString("firstName"), doc.getString("lastName"), doc.getString("role"));
                 }
             });
-            return; // Stop execution para hindi na mag-load yung login layout
+            return; 
         }
 
         EdgeToEdge.enable(this);
