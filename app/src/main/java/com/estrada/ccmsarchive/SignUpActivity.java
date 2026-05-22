@@ -66,7 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
             if (validateFields(firstName, fName, lastName, lName, studentId, studID, email, emailInput, password, passwordInput, role)) {
 
                 if (role.equals("Instructor")) {
-                    // VALIDATION PARA SA INSTRUCTOR: Gamitin ang Full Name bilang Document ID
+                    // VALIDATION FOR INSTRUCTOR
                     String fullName = fName + " " + lName;
 
                     db.collection("Instructors").document(fullName).get()
@@ -74,9 +74,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if (task.isSuccessful() && task.getResult().exists()) {
                                     String officialEmail = task.getResult().getString("email");
 
-                                    // I-check kung ang email ay tugma sa instructors_data.json
                                     if (emailInput.equalsIgnoreCase(officialEmail)) {
-                                        // Proceed sa Auth at Pag-save
                                         performRegistration(emailInput, passwordInput, fName, lName, studID, role, "CCMS", "Instructor");
                                     } else {
                                         email.setError("Email does not match our instructor records.");
@@ -86,14 +84,14 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    // VALIDATION PARA SA STUDENT: Nanatili sa student_masterlist gamit ang ID
+                    // VALIDATION FOR STUDENT
                     db.collection("student_masterlist").document(studID).get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful() && task.getResult().exists()) {
                                     String offFName = task.getResult().getString("firstName");
                                     String offLName = task.getResult().getString("lastName");
                                     String prog = task.getResult().getString("program");
-                                    String yr = task.getResult().getString("yearLevel"); // Match sa database
+                                    String yr = task.getResult().getString("yearLevel"); 
 
                                     if (fName.equalsIgnoreCase(offFName) && lName.equalsIgnoreCase(offLName)) {
                                         performRegistration(emailInput, passwordInput, offFName, offLName, studID, role, prog, yr);
@@ -118,13 +116,12 @@ public class SignUpActivity extends AppCompatActivity {
                         Map<String, Object> user = new HashMap<>();
                         user.put("firstName", fName);
                         user.put("lastName", lName);
-                        user.put("idNumber", id); // In-input na ID ni Instructor
+                        user.put("idNumber", id); 
                         user.put("email", email);
                         user.put("program", prog);
                         user.put("year", yr);
                         user.put("role", role);
 
-                        // 1. I-save sa 'users' collection para sa login
                         db.collection("users").document(userId).set(user)
                                 .addOnSuccessListener(aVoid -> {
 
