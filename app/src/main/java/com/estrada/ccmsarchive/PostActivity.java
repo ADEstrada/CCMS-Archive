@@ -439,7 +439,7 @@ public class PostActivity extends AppCompatActivity {
                                     String generatedProjectId = doc.getId();
                                     String selectedProfName = prof_instructor_field.getText().toString().trim();
 
-                                    // --- SMART CHECK: May account ba si Prof sa App? ---
+                                    // SMART CHECK
                                     db.collection("users")
                                             .whereEqualTo("role", "Instructor")
                                             .get()
@@ -454,7 +454,7 @@ public class PostActivity extends AppCompatActivity {
                                                 }
 
                                                 if (instructorUid != null) {
-                                                    // MAY ACCOUNT: Update project doc para lumabas sa ApprovalFragment ni Prof
+                                                    // INSTRUCTOR HAS ACCOUNT
                                                     db.collection("Pending_Projects").document(generatedProjectId)
                                                             .update("instructorUid", instructorUid)
                                                             .addOnSuccessListener(aVoid -> {
@@ -462,7 +462,7 @@ public class PostActivity extends AppCompatActivity {
                                                                 finish();
                                                             });
                                                 } else {
-                                                    // WALANG ACCOUNT: Gamitin ang original Email
+                                                    //DOESN'T HAVE ACCOUNT: EMAIL
                                                     db.collection("Instructors").document(selectedProfName).get()
                                                             .addOnSuccessListener(profDoc -> {
                                                                 if (profDoc.exists()) {
